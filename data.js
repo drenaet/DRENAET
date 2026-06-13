@@ -41,7 +41,7 @@ const DATA = {
     },
 
     // Sheet du personnel admin
-    admin: "",  // ← ID du Google Sheet personnel DRENAET
+    admin: "1sOOO6-XV76-vQ8k34MH07sm9miK-SL_2MjnIt4Yi_Po",  // ← ID du Google Sheet personnel DRENAET
     admin_onglet: "Personnel",
   },
 
