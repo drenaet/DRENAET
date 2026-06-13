@@ -16,7 +16,7 @@ const DATA = {
   sheets: {
     secondaires_prives:  "1zPe70IuACqRoDRwFWl570eP7jMHRABEd_KMKT_jwvh4",  // ← même Sheet que l'APFC
     secondaires_publics: "1h8m4MBr0ONq3q1bRqLqWZA1GlvsMP6ATfHJXnJ7mhv0",  // ← même Sheet que l'APFC
-    primaires:           "1l-hszH2MfKtLxd8GgM7HnwMuiJP5jm2Y4_HARJMW90w",  // ← à renseigner quand le Form IEPP sera créé
+    primaires:           "",  // ← à renseigner quand le Form IEPP sera créé
   },
 
   // ── MÉDIAS ──────────────────────────────────────────────────────
@@ -134,7 +134,7 @@ const DATA = {
       adjoint_photo:       "",
 
       // Google Sheet IDs pour cette inspection (à remplir)
-      sheet_primaires_publics:  "1l-hszH2MfKtLxd8GgM7HnwMuiJP5jm2Y4_HARJMW90w",  // ← ID du Google Sheet IEPP1 primaires publics
+      sheet_primaires_publics:  "",  // ← ID du Google Sheet IEPP1 primaires publics
       sheet_primaires_prives:   "",  // ← ID du Google Sheet IEPP1 primaires privés
       sheet_prescolaires_publics: "",
       sheet_prescolaires_prives:  "",
