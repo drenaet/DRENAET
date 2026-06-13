@@ -1760,9 +1760,79 @@ async function loadFromSheets() {
   }
 }
 
+  async function loadIEPPData() {
+  const sheetId = DATA.sheets.primaires;
+  if (!sheetId || sheetId.trim() === "") return;
+
+  try {
+    // On cible spécifiquement l'onglet "Ecoles actives" par son nom dans l'URL
+    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=Ecoles%20actives`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Erreur de téléchargement");
+    
+    const rawText = await response.text();
+    const table = _parseSheet(rawText).table;
+    const rows = _rowsFromTable(table);
+
+    // On réinitialise d'abord les tableaux des 3 IEPP pour éviter les doublons au rechargement
+    DATA.iepp.forEach(iepp => {
+      iepp.primaires_publics = [];
+      iepp.primaires_prives = [];
+      iepp.prescolaires_publics = [];
+      iepp.prescolaires_prives = [];
+    });
+
+    // Tri et distribution automatique de chaque ligne
+    rows.forEach(r => {
+      const inspectionStr = r[0] ? r[0].toUpperCase() : "";
+      const cycleStr      = r[1] ? r[1].toUpperCase() : "";
+      const typeStr       = r[2] ? r[2].toUpperCase() : "";
+      
+      // On cherche l'IEPP correspondante dans DATA.iepp (IEPP 1, IEPP 2 ou IEPP 3)
+      let targetIEPP = DATA.iepp.find(iepp => inspectionStr.includes(iepp.nom.toUpperCase()));
+      
+      if (targetIEPP) {
+        const ecole = {
+          code: r[3] || "0",
+          nom: r[4] || "",
+          classes: parseInt(r[5]) || 0,
+          eleves: parseInt(r[6]) || 0,
+          directeur: r[7] || "NON RENSEIGNÉ"
+        };
+
+        // Distribution selon les critères
+        if (cycleStr.includes("PRIMAIRE")) {
+          if (typeStr.includes("PUBLIC")) {
+            targetIEPP.primaires_publics.push(ecole);
+          } else if (typeStr.includes("PRIV")) {
+            targetIEPP.primaires_prives.push(ecole);
+          }
+        } else if (cycleStr.includes("PRE") || cycleStr.includes("MATERNELLE")) {
+          if (typeStr.includes("PUBLIC")) {
+            targetIEPP.prescolaires_publics.push(ecole);
+          } else if (typeStr.includes("PRIV")) {
+            targetIEPP.prescolaires_prives.push(ecole);
+          }
+        }
+      }
+    });
+
+    console.log("✅ Données des IEPP réparties avec succès !");
+    
+    // Forcer la mise à jour de l'affichage
+    if (typeof renderAll === 'function') renderAll();
+
+  } catch (error) {
+    console.error("❌ Erreur lors du chargement des données IEPP :", error);
+  }
+}
+  
 // ══ INIT ══════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
   renderAll();
+
+  // Votre nouvel appel pour charger les écoles primaires :
+  loadIEPPData();
   // Charger les données depuis Google Sheets (secondaires privés et publics)
   loadFromSheets();
   // Initialiser l'entrée de base dans l'historique
