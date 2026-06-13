@@ -21,7 +21,7 @@ const DATA = {
     // Primaire/Maternelle, Public/Privé).
     // Les réponses arrivent dans l'onglet "Ecoles actives".
     // La fonction distributeEcoles() analyse et distribue automatiquement.
-    ecoles_iepp: "",  // ← collez ici l'ID de votre Google Sheet unique IEPP
+    ecoles_iepp: "1l-hszH2MfKtLxd8GgM7HnwMuiJP5jm2Y4_HARJMW90w",  // ← collez ici l'ID de votre Google Sheet unique IEPP
 
     // Nom exact de l'onglet dans le Sheet (sensible à la casse)
     ecoles_iepp_onglet: "Ecoles actives",
