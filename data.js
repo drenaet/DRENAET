@@ -1,6 +1,6 @@
 // ══════════════════════════════════════════════════════════════════
 //  data.js — DRENAET Agboville
-//  Direction Régionale de l'Éducation Nationale des Arts
+//  Direction Régionale de l'Éducation Nationale de l'alphabétisation 
 //  et de l'Enseignement Technique d'Agboville
 //  Mis à jour : Juin 2026
 // ══════════════════════════════════════════════════════════════════
@@ -8,7 +8,7 @@
 const DATA = {
 
   // ── MOT DE PASSE UNIQUE ─────────────────────────────────────────
-  mot_de_passe: "drenaet2026",  // ← Changer ici pour modifier le mot de passe
+  mot_de_passe: "2026",  // ← Changer ici pour modifier le mot de passe
 
   // ── MÉDIAS ──────────────────────────────────────────────────────
   facebook:              "",   // ← URL page Facebook
@@ -19,14 +19,14 @@ const DATA = {
   info: {
     slogan: "« Œuvrer à l'amélioration de la qualité de l'enseignement et de la formation professionnelle dans la région d'Agboville. »",
     adresse: "Agboville, Côte d'Ivoire",
-    email:   "drenaet.agboville@education.gouv.ci",
+    email:   "non_defini@",
     annonces: [
       {
         type:    "info",
         couleur: "blue",
         emoji:   "📋",
         titre:   "Bienvenue sur le portail DRENAET Agboville",
-        texte:   "Plateforme officielle de la Direction Régionale de l'Éducation Nationale des Arts et de l'Enseignement Technique d'Agboville. Toutes les informations sur les établissements et le personnel.",
+        texte:   "Plateforme officielle de la Direction Régionale de l'Éducation Nationale de l'alphabétisation et de l'Enseignement Technique d'Agboville. Toutes les informations sur les établissements et le personnel.",
         date:    "Juin 2026"
       },
       {
