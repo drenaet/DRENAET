@@ -134,7 +134,7 @@ const DATA = {
       adjoint_photo:       "",
 
       // Google Sheet IDs pour cette inspection (à remplir)
-      sheet_primaires_publics:  "",  // ← ID du Google Sheet IEPP1 primaires publics
+      sheet_primaires_publics:  "1l-hszH2MfKtLxd8GgM7HnwMuiJP5jm2Y4_HARJMW90w",  // ← ID du Google Sheet IEPP1 primaires publics
       sheet_primaires_prives:   "",  // ← ID du Google Sheet IEPP1 primaires privés
       sheet_prescolaires_publics: "",
       sheet_prescolaires_prives:  "",
