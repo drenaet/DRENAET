@@ -1508,16 +1508,24 @@ function renderAdmin() {
 
 function renderAgentRow(a) {
   const ini = (a.nom||'A').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  
+  // ── Préparation du texte du poste (TEXTE DROIT ET NORMAL) ──
+  let textePoste = '';
+  if (a.poste && a.poste !== '-' && a.poste.toLowerCase() !== 'agent') {
+    // Écrit en texte normal, juste un peu plus petit (12px) pour l'harmonie visuelle
+    textePoste = ` <span style="font-size: 12px; color: var(--muted); font-weight: normal;">(${a.poste})</span>`;
+  }
+
   return `<div class="person-row">
     <div class="avatar other">${ini}</div>
     <div class="p-info">
-      <div class="pname">${a.nom||'—'}</div>
+      <div class="pname">${a.nom||'—'}${textePoste}</div>
       ${a.matricule ? `<div class="p-matricule">Mat. ${a.matricule}</div>` : ''}
       ${a.contact   ? `<div class="prole">📞 ${a.contact}</div>` : ''}
     </div>
     ${statusBadge(a.statut||'present')}
   </div>`;
-}
+  }
 
 function toggleSvc(id) {
   document.getElementById('svc-card-' + id)?.classList.toggle('open');
@@ -1552,12 +1560,13 @@ function loadAdminFromSheet() {
       const lignes = (table.rows || []).map(row => ({
         svcRaw:    valCell(row, 0),  // Colonne A — Services
         nomAgent:  valCell(row, 1),  // Colonne B — Nom_Prenoms
-        matricule: valCell(row, 2),  // Colonne C — Matricule
-        contact:   valCell(row, 3),  // Colonne D — Contact
+        poste:     valCell(row, 2),  // Colonne C — Poste (Chef de Service / Gestionnaire)
+        matricule: valCell(row, 3),  // Colonne D — Matricule
+        contact:   valCell(row, 4),  // Colonne E — Contact
       }));
 
       console.log(`📊 ${lignes.length} ligne(s) lue(s) dans "Personnel"`);
-      lignes.forEach((l,i) => console.log(`  Ligne ${i+2}: svc="${l.svcRaw}" nom="${l.nomAgent}"`));
+      lignes.forEach((l,i) => console.log(`  Ligne ${i+2}: svc="${l.svcRaw}" nom="${l.nomAgent}" poste="${l.poste}"`);
 
       // ── Vider tous les services ──────────────────────────────────
       const services = DATA.personnel_admin?.services || [];
@@ -1585,7 +1594,7 @@ function loadAdminFromSheet() {
         if (!l.nomAgent) { ignores++; return; }
 
         // ── 2. IGNORER L'EN-TÊTE DU SHEET (Si gviz la renvoie) ──
-        if (l.nomAgent === "Nom_Prenoms" || l.svcRaw === "Services") {
+        if (l.nomAgent === "Nom_Prenoms" || l.svcRaw === "Services" || l.poste === "Poste") {
           console.log("ℹ️ Ligne d'en-tête détectée et ignorée.");
           return; // On s'arrête ici pour cette ligne et on passe à l'agent suivant
         }
@@ -1611,7 +1620,14 @@ function loadAdminFromSheet() {
                  || services.find(s => s.id === 'autre');
 
         if (svc) {
-          svc.agents.push({ nom: l.nomAgent, matricule: l.matricule, contact: l.contact, statut: 'present', service: l.svcRaw });
+          svc.agents.push({ 
+            nom: l.nomAgent, 
+            poste: l.poste, // <-- On ajoute la propriété poste ici
+            matricule: l.matricule, 
+            contact: l.contact, 
+            statut: 'present', 
+            service: l.svcRaw 
+         });
           console.log(`  ✅ "${l.nomAgent}" → "${svc.nom}"`);
           distribues++;
         } else {
