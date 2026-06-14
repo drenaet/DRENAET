@@ -1566,7 +1566,7 @@ function loadAdminFromSheet() {
       }));
 
       console.log(`📊 ${lignes.length} ligne(s) lue(s) dans "Personnel"`);
-      lignes.forEach((l,i) => console.log(`  Ligne ${i+2}: svc="${l.svcRaw}" nom="${l.nomAgent}" poste="${l.poste}"`);
+      lignes.forEach((l,i) => console.log(`  Ligne ${i+2}: svc="${l.svcRaw}" nom="${l.nomAgent}" poste="${l.poste}"`));
 
       // ── Vider tous les services ──────────────────────────────────
       const services = DATA.personnel_admin?.services || [];
