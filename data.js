@@ -101,7 +101,7 @@ const DATA = {
   // ── PERSONNEL ADMINISTRATIF ─────────────────────────────────────
   personnel_admin: {
     services: [
-      { id:"secretariat", nom:"Secrétariat",         icone:"📝", agents:[] },
+      { id:"secretariat", nom:"Sécretariat",         icone:"📝", agents:[] },
       { id:"examens",     nom:"Examens et Concours", icone:"🎓", agents:[] },
       { id:"rh",          nom:"Ressources Humaines", icone:"👥", agents:[] },
       { id:"informatique",nom:"Informatique",         icone:"💻", agents:[] },
