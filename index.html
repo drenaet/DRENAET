@@ -1584,6 +1584,12 @@ function loadAdminFromSheet() {
       lignes.forEach((l, idx) => {
         if (!l.nomAgent) { ignores++; return; }
 
+        // ── 2. IGNORER L'EN-TÊTE DU SHEET (Si gviz la renvoie) ──
+        if (l.nomAgent === "Nom_Prenoms" || l.svcRaw === "Services") {
+          console.log("ℹ️ Ligne d'en-tête détectée et ignorée.");
+          return; // On s'arrête ici pour cette ligne et on passe à l'agent suivant
+        }
+        
         // Détecter le service via norm()
         const svcN = norm(l.svcRaw);
         let svcId  = TABLE[svcN];
