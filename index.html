@@ -1859,10 +1859,11 @@ function statusBadge(statut) {
 }
 
 // ════════════════ SYSTEME DE GESTION DES COURRIERS EN TEMPS RÉEL ════════════════
-let dbCourriersComplet = []; // Contiendra les lignes synchronisées depuis Google Sheets
+// ════════════════ SYSTEME DE GESTION DES COURRIERS APFC (OPTIMISÉ SHEET) ════════════════
+let dbCourriersComplet = []; 
 
 /**
- * 1. FONCTION DE CONNEXION AVEC LE MOTEUR LOADFROMSHEETS
+ * 1. INITIALISATION ET LECTURE DES COLONNES DU SHEET
  */
 function initialiserCourriersAPFC(rawJson) {
   try {
@@ -1870,38 +1871,40 @@ function initialiserCourriersAPFC(rawJson) {
     const table = _parseSheet(rawJson).table;
     if (!table || !table.rows) return;
 
-    // Extraction et nettoyage des données de la grille Google Sheets
+    // Correspondance exacte avec vos colonnes : Type(0), Mois(1), Num(2), Date(3), Objet(4), Intervenant(5), Obs(6)
     dbCourriersComplet = table.rows.map(row => {
       const typeBrut = (valCell(row, 0) || "").trim().toLowerCase();
       let typeId = "inconnu";
       if (typeBrut.includes("arriv")) typeId = "arrive";
       if (typeBrut.includes("départ") || typeBrut.includes("depart")) typeId = "depart";
 
+      const dateValeur = valCell(row, 3) || "";
+      const moisValeur = valCell(row, 1) || "";
+
       return {
         type: typeId,
-        date: valCell(row, 1) || "",
+        date: dateValeur,
+        moisGroup: extraireMoisAnnee(dateValeur, moisValeur), // Calcule automatiquement "Juin 2026"
         ref: valCell(row, 2) || "N° Réf N/A",
-        intervenant: valCell(row, 3) || "—",
+        intervenant: valCell(row, 5) || "—",
         objet: valCell(row, 4) || "Sans objet spécifié",
-        observation: (valCell(row, 5) || "").trim()
+        observation: (valCell(row, 6) || "").trim()
       };
     }).filter(c => c.type !== "inconnu" && (c.ref !== "N° Réf N/A" || c.objet !== "Sans objet spécifié"));
 
-    // Calcul et mise à jour des compteurs (KPIs) du bandeau supérieur
+    // Rafraîchir les compteurs et l'affichage visuel
     mettreAJourKpisCourriers();
-
-    // Lancement du rendu visuel de la page
     renderCourriers();
 
   } catch (error) {
-    console.error("❌ Erreur lors du traitement du flux Courriers :", error);
+    console.error("❌ Erreur de traitement du flux Courriers :", error);
     const el = document.getElementById('mois-cards');
     if (el) el.innerHTML = `<div class="cour-empty">⚠️ Erreur de synchronisation des données.</div>`;
   }
 }
 
 /**
- * 2. LE MOTEUR DE RENDU REPENSIF ET DYNAMIQUE (Remplace votre ancienne fonction)
+ * 2. MOTEUR DE RENDU DES ACCORDÉONS MENSUELS
  */
 function renderCourriers() {
   const el = document.getElementById('mois-cards');
@@ -1912,10 +1915,10 @@ function renderCourriers() {
     return;
   }
 
-  // Groupement automatique des courriers par mois/année sur la base de la colonne B
+  // Regroupement par clé "Mois Année"
   const groupes = {};
   dbCourriersComplet.forEach(c => {
-    const nomMois = extraireMoisAnnee(c.date);
+    const nomMois = c.moisGroup;
     if (!groupes[nomMois]) {
       groupes[nomMois] = { mois: nomMois, arrives: [], departs: [] };
     }
@@ -1925,12 +1928,11 @@ function renderCourriers() {
 
   const listeMois = Object.values(groupes);
 
-  // Injection du HTML structurel reprenant exactement vos classes CSS
+  // Construction du HTML
   el.innerHTML = listeMois.map((m, i) => {
     const arr = m.arrives;
     const dep = m.departs;
-    // On laisse le premier mois (le plus récent) ouvert par défaut, les autres fermés
-    const openClass = i === 0 ? "open" : "";
+    const openClass = i === 0 ? "open" : ""; // Ouvre le mois le plus récent par défaut
 
     return `
     <div class="mois-card ${openClass}" id="mois-${i}">
@@ -1960,13 +1962,12 @@ function renderCourriers() {
 }
 
 /**
- * 3. COMPOSANT STRUCTUREL : Générateur de ligne individuelle (Row)
+ * 3. COMPOSANT : COMPORTEMENT DES LIGNES (Row)
  */
 function courrierRow(c, isDepart) {
   const classeType = isDepart ? "dep" : "";
   const labelIntervenant = isDepart ? "DESTINATION :" : "PROVENANCE :";
   
-  // Analyse sémantique des observations pour attribuer la couleur correspondante
   let obsClasse = "info";
   const obsLower = c.observation.toLowerCase();
   if (obsLower.includes("urg") || obsLower.includes("import")) obsClasse = "urgent";
@@ -1978,7 +1979,7 @@ function courrierRow(c, isDepart) {
   return `
     <div class="cour-row ${classeType}">
       <div class="cour-row-top">
-        <span class="cour-num">${c.ref}</span>
+        <span class="cour-num">N° ${c.ref}</span>
         <span class="cour-date">📅 ${c.date}</span>
       </div>
       <div class="cour-objet">${c.objet}</div>
@@ -1992,7 +1993,7 @@ function courrierRow(c, isDepart) {
 }
 
 /**
- * 4. COMPTEURS KPIs GLOBAUX
+ * 4. COMPTEURS DE STATISTIQUES GLOBAUX (KPIs)
  */
 function mettreAJourKpisCourriers() {
   const arrCount = dbCourriersComplet.filter(c => c.type === "arrive").length;
@@ -2008,28 +2009,40 @@ function mettreAJourKpisCourriers() {
 }
 
 /**
- * 5. TRADUCTEUR ET DETECTEUR DE DATES EN MOIS TEXTUELS
+ * 5. TRADUCTEUR DE DATE INTELLIGENT (Gère 2026-06-12 et les textes)
  */
-function extraireMoisAnnee(chaineDate) {
-  if (!chaineDate) return "Mois non spécifié";
+function extraireMoisAnnee(chaineDate, moisBrut) {
   const moisNoms = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
-  
-  if (chaineDate.includes("/")) {
-    const parts = chaineDate.split("/");
-    if (parts.length >= 2) {
-      const indexMois = parseInt(parts[1], 10) - 1;
-      const annee = parts[2] ? parts[2].split(" ")[0] : new Date().getFullYear();
-      if (indexMois >= 0 && indexMois < 12) return `${moisNoms[indexMois]} ${annee}`;
+  let annee = new Date().getFullYear();
+
+  if (chaineDate) {
+    // Gestion du format avec tirets : YYYY-MM-DD
+    if (chaineDate.includes("-")) {
+      const parts = chaineDate.split("-");
+      if (parts[0].length === 4) annee = parts[0];
+      const idx = parseInt(parts[1], 10) - 1;
+      if (idx >= 0 && idx < 12) return `${moisNoms[idx]} ${annee}`;
+    } 
+    // Gestion du format classique avec slashs : DD/MM/YYYY
+    else if (chaineDate.includes("/")) {
+      const parts = chaineDate.split("/");
+      if (parts.length >= 3) annee = parts[2].split(" ")[0];
+      const idx = parseInt(parts[1], 10) - 1;
+      if (idx >= 0 && idx < 12) return `${moisNoms[idx]} ${annee}`;
     }
   }
-  for (const m of moisNoms) {
-    if (chaineDate.toLowerCase().includes(m.toLowerCase())) return m;
+
+  // Secours : Si la date est mal lue, on utilise la colonne texte "Mois" de votre Sheet
+  if (moisBrut) {
+    const mClean = moisBrut.trim().charAt(0).toUpperCase() + moisBrut.trim().slice(1).toLowerCase();
+    return `${mClean} ${annee}`;
   }
+
   return "Suivi Courants";
 }
 
 /**
- * 6. FONCTIONS DE NAVIGATION ET D'ANIMATION (Gestion interactive des clics)
+ * 6. ACTIONS ET INTERACTIVITÉ DE L'INTERFACE
  */
 function toggleMois(i) {
   const el = document.getElementById(`mois-${i}`);
@@ -2049,7 +2062,7 @@ function switchMoisTab(i, tab) {
     if(tDep) tDep.classList.add('active'); if(tArr) tArr.classList.remove('active');
     if(pDep) pDep.classList.add('active'); if(pArr) pArr.classList.remove('active');
   }
-}
+  }
 
 // ══ CHARTS ════════════════════════════════════════════════
 function renderCharts() {
