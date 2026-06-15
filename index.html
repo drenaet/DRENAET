@@ -1055,11 +1055,6 @@ function renderAll() {
 
   const nbAgents = (DATA.personnel_admin?.services||[]).reduce((s,sv)=>s+(sv.agents||[]).length,0);
 
-  // Courriers
-  let nbArr=0, nbDep=0;
-  (DATA.courriers||[]).forEach(m=>{nbArr+=(m.arrives||[]).length;nbDep+=(m.departs||[]).length;});
-  const nbCour = nbArr+nbDep;
-
   // KPI hero accueil
   setText('kpi-sec-prives', nbSecPr);
   setText('kpi-sec-publics', nbSecPu);
