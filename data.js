@@ -206,16 +206,16 @@ const DATA = {
   // ── COURRIERS ───────────────────────────────────────────────────
   courriers: [
     // Exemple :
-    // {
-    //   mois: "Janvier 2026",
-    //   icone: "📅",
-    //   arrives: [
-    //     { num:"A001", date:"03/01/2026", objet:"Convocation réunion", expediteur:"DRENA", obs:"traite", pdf:"" }
-    //   ],
-    //   departs: [
+     {
+       mois: "Janvier",
+       icone: "📅",
+       arrives: [
+        // { num:"A001", date:"03/01/2026", objet:"Convocation réunion", expediteur:"DRENA", obs:"traite", pdf:"" }
+       ],
+       departs: [
     //     { num:"D001", date:"05/01/2026", objet:"Rapport mensuel", destinataire:"MENA", obs:"info", pdf:"" }
-    //   ]
-    // }
+       ]
+     }
   ],
 
   // ── GALERIE PHOTOS ──────────────────────────────────────────────
