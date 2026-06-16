@@ -46,8 +46,7 @@ const DATA = {
     
    // Sheet du Courrier 
     courriers:        "1TdJyxzVaqruQL4zEBVABDH5EaKjqJoB6sIetnhP-oSc",  // ← ID Google Sheet Courriers
-    courriers_onglet: "Courriers",  // ← Nom exact de l'onglet (A=Type B=Mois C=Num D=Date E=Objet F=Obs)
-    courriers_onglet: "Courriers",  // ← nom de l'onglet (colonnes: Type, Mois, Num, Date, Objet, Expediteur_Destinataire, Obs)
+    courriers_onglet: "Courriers",  // ← Nom exact de l'onglet (A=Type B=Mois C=Num D=Date E=Objet F=Obs)    
 
     // Colonnes exactes de votre Sheet (en-têtes tels qu'ils apparaissent)
     admin_colonnes: {
