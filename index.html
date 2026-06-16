@@ -1040,6 +1040,14 @@ function badgeSecondaire(e, isPrive) {
 
 // ══ RENDER ALL ════════════════════════════════════════════
 function renderAll() {
+  // ─── ➕ AJOUT : CALCUL DYNAMIQUE ET SÉCURISÉ DES COURRIERS ───
+  // Permet d'éviter le crash "nbCour is not defined" au chargement
+  const listeCourriers = (typeof dbCourriersComplet !== 'undefined') ? dbCourriersComplet : [];
+  const nbArr          = listeCourriers.filter(c => c.type === "arrive").length;
+  const nbDep          = listeCourriers.filter(c => c.type === "depart").length;
+  const nbCour         = nbArr + nbDep;
+
+  // ─── LE RESTE DE VOTRE CODE EXISTANT (INCHANGÉ ET SÉCURISÉ) ───
   const secPrives  = (DATA.secondaires_prives||[]).filter(e=>e.chef_nom&&e.chef_nom.trim()!=='');
   const secPublics = (DATA.secondaires_publics||[]).filter(e=>e.chef_nom&&e.chef_nom.trim()!=='');
   const nbSecPr = secPrives.length;
@@ -1098,6 +1106,7 @@ function renderAll() {
   setText('ckpi-dep', nbDep);
   setText('ckpi-total', nbCour);
 
+  // Exécution des affichages secondaires
   renderInfo();
   renderDirection();
   renderSecondaires();
@@ -1107,7 +1116,7 @@ function renderAll() {
   renderCharts();
   renderFooter();
   renderGalerie();
-}
+  }
 
 function setText(id, val) {
   const el=document.getElementById(id);
