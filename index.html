@@ -2214,12 +2214,22 @@ function _buildSecEntry(row, id, numero, extra) {
   }, extra || {});
 }
 
+//--loadFromSheet---
+  
 async function loadFromSheets() {
+  // Sécurité : on récupère les variables scolaires
   const sheets = DATA.sheets || {};
-  // 1. MODIFICATION : On vérifie aussi si la feuille courriers existe
-  if(!sheets.secondaires_prives && !sheets.secondaires_publics && !sheets.courriers) return;
+  
+  // Sécurité FIX : On récupère l'ID et l'onglet qu'ils soient dans DATA.sheets ou directement à la racine de DATA
+  const idCourriers = sheets.courriers || DATA.courriers;
+  const nomOngletCourriers = DATA.courriers_onglet || 'Courriers';
+
+  // Si aucune feuille n'est configurée, on s'arrête
+  if(!sheets.secondaires_prives && !sheets.secondaires_publics && !idCourriers) return;
 
   const promises = [];
+  
+  // Téléchargement Privés
   if(sheets.secondaires_prives) {
     promises.push(
       fetch(_sheetUrl(sheets.secondaires_prives, 'Réponses au formulaire 1'))
@@ -2228,6 +2238,8 @@ async function loadFromSheets() {
         .catch(() => null)
     );
   }
+  
+  // Téléchargement Publics
   if(sheets.secondaires_publics) {
     promises.push(
       fetch(_sheetUrl(sheets.secondaires_publics, 'Réponses au formulaire 1'))
@@ -2237,10 +2249,10 @@ async function loadFromSheets() {
     );
   }
   
-  // 2. AJOUT : Lancement du téléchargement de la feuille des Courriers
-  if(sheets.courriers) {
+  // FIX 1 : Lancement avec le BON ID et le BON nom d'onglet ("Courriers")
+  if(idCourriers) {
     promises.push(
-      fetch(_sheetUrl(sheets.courriers, 'Réponses au formulaire 1')) // Changez le nom de l'onglet si nécessaire
+      fetch(_sheetUrl(idCourriers, nomOngletCourriers)) 
         .then(r => r.text())
         .then(raw => ({ type:'courriers', raw }))
         .catch(() => null)
@@ -2253,7 +2265,6 @@ async function loadFromSheets() {
   results.forEach(res => {
     if(!res || !res.raw) return;
     try {
-      // 3. SÉCURISATION & AJOUT : Tri strict de chaque type de feuille
       if(res.type === 'prives') {
         const table = _parseSheet(res.raw).table;
         const rows  = _rowsFromTable(table).filter(r => r[COL_SEC.nom]);
@@ -2261,7 +2272,7 @@ async function loadFromSheets() {
         console.log('✅ Privés chargés:', DATA.secondaires_prives.length);
         updated = true;
       } 
-      else if(res.type === 'publics') { // Changé "else" par "else if" pour éviter les bugs
+      else if(res.type === 'publics') {
         const table = _parseSheet(res.raw).table;
         const rows  = _rowsFromTable(table).filter(r => r[COL_SEC.nom]);
         DATA.secondaires_publics = rows.map((r, i) => _buildSecEntry(r, 50+i, i+1, {
@@ -2270,9 +2281,11 @@ async function loadFromSheets() {
         console.log('✅ Publics chargés:', DATA.secondaires_publics.length);
         updated = true;
       } 
-      else if(res.type === 'courriers') { // Prise en charge directe de votre nouveau module
+      else if(res.type === 'courriers') {
         initialiserCourriersAPFC(res.raw);
         console.log('✅ Registre des courriers synchronisé avec succès');
+        // FIX 2 : On passe updated à true pour forcer le rafraîchissement global du menu !
+        updated = true; 
       }
     } catch(e) {
       console.error('Sheets parse error:', e);
@@ -2280,9 +2293,9 @@ async function loadFromSheets() {
   });
 
   if(updated) {
-    // Re-render uniquement les sections scolaires concernées
+    // Re-render les sections concernées et met à jour les badges globaux du menu principal
     if(typeof renderSecondaires === 'function') renderSecondaires();
-    if(typeof renderAll === 'function') renderAll();
+    if(typeof renderAll === 'function') renderAll(); 
   }
 }
 
