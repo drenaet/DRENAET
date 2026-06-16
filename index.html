@@ -952,7 +952,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);}
 
 // ══ AUTH ══════════════════════════════════════════════════
 let isConnected = false;
-const PROTECTED_PAGES = ['accueil','secondaires','sec-prives','sec-publics','inspections','iepp1','iepp2','iepp3','admin','courriers'];
+const PROTECTED_PAGES = ['secondaires','sec-prives','sec-publics','inspections','iepp1','iepp2','iepp3','admin','courriers'];
 
 function openPwd() {
   document.getElementById('pwd-input').value = '';
@@ -2162,143 +2162,94 @@ async function loadCourriersFromSheet() {
     alert('Renseignez DATA.sheets.courriers dans data.js avec l\'ID de votre Google Sheet.');
     return;
   }
-
   const onglet = encodeURIComponent(DATA.sheets?.courriers_onglet || 'Courriers');
-  const url    = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${onglet}`;
-
+  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${onglet}`;
   const btn = document.getElementById('btn-actualiser-courriers');
   if (btn) { btn.textContent = '⏳ Chargement…'; btn.disabled = true; }
 
   try {
-    const raw   = await fetch(url).then(r => r.text());
-    const json  = JSON.parse(raw.replace(/^.*?\(/, '').replace(/\);?\s*$/, ''));
+    const raw = await fetch(url).then(r => r.text());
+    const json = JSON.parse(raw.replace(/^.*?\(/, '').replace(/\);?\s*$/, ''));
     const table = json.table;
-
     if (!table || !table.rows) {
       console.warn('Courriers: table vide');
       if (btn) { btn.textContent = '⚠️ Vide'; btn.disabled = false; }
       return;
     }
 
-    const headers = (table.cols || []).map(c => (c.label || '').trim());
-    console.log('📋 En-têtes Courriers :', headers);
-
-    // ── Lire toutes les lignes par position ───────────────────────
-    // A=0 Type | B=1 Mois | C=2 Num | D=3 Date | E=4 Objet | F=5 Obs
-    const MOIS_FR = ['janvier','février','mars','avril','mai','juin',
-                     'juillet','août','septembre','octobre','novembre','décembre'];
-
-    function fmtMois(raw) {
-      if (!raw) return null;
-      raw = raw.trim();
-      // Déjà avec année : "Juin 2026"
-      if (/\d{4}/.test(raw)) return raw;
-      // Juste le mois : "Juin" → "Juin 2026"
-      return raw + ' ' + new Date().getFullYear();
-    }
-
-    function fmtNum(raw) {
-      if (!raw) return '—';
-      const n = parseInt(raw);
-      return isNaN(n) ? String(raw) : 'N°' + String(n).padStart(3, '0');
-    }
-
-    function normObs(raw) {
-      if (!raw) return '';
-      const o = norm(raw);
-      if (o.includes('urgent'))  return 'urgent';
-      if (o.includes('trait'))   return 'traite';
-      if (o.includes('attente')) return 'attente';
-      return 'info';
-    }
-
-    const moisMap = {}; // clé = "Juin 2026"
-
-    (table.rows || []).forEach((row, idx) => {
-      const typeRaw  = valCell(row, 0);
-      const moisRaw  = valCell(row, 1);
-      const numRaw   = valCell(row, 2);
-      const dateRaw  = cellDate(row, 3);
-      const objetRaw = valCell(row, 4);
-      const obsRaw   = valCell(row, 5);
-
-      // Ignorer ligne vide ou ligne d'en-tête
-      if (!objetRaw || norm(objetRaw) === 'objet' || norm(typeRaw) === 'type') return;
-
-      const moisNom = fmtMois(moisRaw);
-      if (!moisNom) {
-        console.warn(`Ligne ${idx+2}: mois vide — ignoré`);
-        return;
-      }
-
-      // Détecter Arrivé / Départ
-      const typeN    = norm(typeRaw);
-      const isDepart = typeN.includes('depart') || typeN.includes('départ')
-                    || typeN === 'd' || typeN === 'dep';
-
-      // Créer l'entrée du mois si elle n'existe pas
-      if (!moisMap[moisNom]) {
-        moisMap[moisNom] = { mois: moisNom, icone: '📅', arrives: [], departs: [] };
-      }
-
-      const entry = {
-        num:   fmtNum(numRaw),
-        date:  dateRaw,
-        objet: objetRaw || '—',
-        obs:   normObs(obsRaw),
-      };
-
-      if (isDepart) {
-        moisMap[moisNom].departs.push(entry);
-        console.log(`  ✅ Ligne ${idx+2} → Départ | ${moisNom} | ${entry.num}`);
-      } else {
-        moisMap[moisNom].arrives.push(entry);
-        console.log(`  ✅ Ligne ${idx+2} → Arrivé | ${moisNom} | ${entry.num}`);
-      }
-    });
-
-    // ── Trier les mois chronologiquement ──────────────────────────
-    DATA.courriers = Object.values(moisMap).sort((a, b) => {
-      const ordre = m => {
-        const parts = m.mois.split(' ');
-        const mo = MOIS_FR.findIndex(x => norm(x) === norm(parts[0]));
-        const yr = parseInt(parts[1]) || new Date().getFullYear();
-        return yr * 12 + (mo >= 0 ? mo : 0);
-      };
-      return ordre(a) - ordre(b);
-    });
-
-    // ── Mettre à jour l'affichage ─────────────────────────────────
-    renderCourriers();
+    const rows = table.rows || [];
+    const moisMap = {};
+    
+    // Icônes thématiques pour l'affichage visuel des mois
+    const iconesMois = { 
+      "Janvier": "❄️", "Février": "🍀", "Mars": "🌱", "Avril": "🌧️", 
+      "Mai": "🌸", "Juin": "☀️", "Juillet": "🏖️", "Août": "🎒", 
+      "Septembre": "🍁", "Octobre": "🎃", "Novembre": "☁️", "Décembre": "🎄" 
+    };
 
     let nbArr = 0, nbDep = 0;
-    DATA.courriers.forEach(m => { nbArr += m.arrives.length; nbDep += m.departs.length; });
-    const nb = nbArr + nbDep;
 
-    const s = id => document.getElementById(id);
-    const sv = (id, v) => { const e = s(id); if (e) e.textContent = v; };
-    sv('ckpi-arr',       nbArr);
-    sv('ckpi-dep',       nbDep);
-    sv('ckpi-total',     nb);
-    sv('kpi2-courriers', nb || '—');
-    sv('cnt-courriers',  nb || '—');
-    sv('pill-nb-mois',   DATA.courriers.length + ' mois');
+    rows.forEach((row) => {
+      // Extraction stricte sur 6 colonnes (Index 0 à 5)
+      const typeRaw = valCell(row, 0).toLowerCase();
+      const moisNom = valCell(row, 1) || 'Indéterminé';
+      const numRaw = valCell(row, 2);
+      const dateRaw = cellDate(row, 3);
+      const objetRaw = valCell(row, 4);
+      const obsRaw = valCell(row, 5).toLowerCase();
 
-    if (btn) { btn.textContent = `✅ ${nb} courrier(s)`; btn.disabled = false; }
-    console.log(`🎯 Courriers: ${nb} total — ${nbArr} arrivé(s), ${nbDep} départ(s)`);
+      // Ignorer l'en-tête du tableau si elle remonte
+      if (typeRaw.includes('type')) return;
+
+      // Détection du type (Arrivé vs Départ)
+      const isDepart = typeRaw.includes('dep') || typeRaw.includes('sort') || typeRaw === 'd';
+
+      // Initialiser le conteneur du mois s'il n'existe pas
+      if (!moisMap[moisNom]) {
+        moisMap[moisNom] = {
+          mois: moisNom,
+          icone: iconesMois[moisNom] || '📅',
+          arrives: [],
+          departs: []
+        };
+      }
+
+      // Construction de l'objet attendu par renderCourriers()
+      const entry = {
+        num: numRaw || '—',
+        date: dateRaw || '',
+        objet: objetRaw || '—',
+        expediteur: '', // Optionnel ou vide puisque absent des 6 colonnes
+        destinataire: '', 
+        obs: obsRaw,
+        pdf: '' // Prévu pour évolution future
+      };
+
+      // Rangement dans le bon tiroir
+      if (isDepart) {
+        moisMap[moisNom].departs.push(entry);
+        nbDep++;
+      } else {
+        moisMap[moisNom].arrives.push(entry);
+        nbArr++;
+      }
+    });
+
+    // Injection des données transformées dans l'état global
+    DATA.courriers = Object.values(moisMap);
+
+    // Actualisation immédiate du rendu graphique
+    renderCourriers();
+
+    const total = nbArr + nbDep;
+    if (btn) { btn.textContent = `🔄 Actualiser (${total})`; btn.disabled = false; }
+    console.log(`🎯 Courriers mis à jour : ${total} lignes traitées.`);
 
   } catch (err) {
-    console.error('Erreur chargement courriers :', err);
-    if (btn) { btn.textContent = '❌ Erreur — voir console'; btn.disabled = false; }
+    console.error('Erreur lors du chargement des courriers :', err);
+    if (btn) { btn.textContent = '❌ Erreur de lecture'; btn.disabled = false; }
   }
-}
-
-// Lire une cellule par index de colonne
-function valCell(row, colIndex) {
-  const cell = row.c ? row.c[colIndex] : null;
-  if (!cell || cell.v === null || cell.v === undefined) return '';
-  return String(cell.v).trim();
-}
+  }
 
 // Lire une cellule date (gviz renvoie Date(2026,5,12) ou valeur formatée)
 function cellDate(row, colIndex) {
