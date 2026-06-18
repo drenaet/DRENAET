@@ -458,7 +458,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);}
     </div>
   </div>
   <div class="topbar-right">
-    <span class="topbar-badge">📍 2026</span>
+    <span class="topbar-badge">📍</span>
     <button class="btn-connect" id="btn-connect" onclick="openPwd()">🔐 Connexion</button>
   </div>
 </div>
@@ -530,7 +530,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);}
   <div class="page" id="page-accueil">
     <div class="hero">
       <h1>🏛️ DRENAET Agboville</h1>
-      <p id="hero-slogan">Tableau de bord 2026</p>
+      <p id="hero-slogan">Tableau de bord</p>
       <div class="hero-stats">
         <div class="hstat"><div class="hv" id="kpi-sec-prives">—</div><div class="hl">Sec. Privés</div></div>
         <div class="hstat"><div class="hv" id="kpi-sec-publics">—</div><div class="hl">Sec. Publics</div></div>
@@ -800,8 +800,8 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);}
     <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:12px;padding:12px 14px;margin-bottom:16px;display:flex;align-items:center;gap:10px;">
       <span style="font-size:20px;">📊</span>
       <div style="flex:1;">
-        <div style="font-size:12px;font-weight:700;color:#065F46;">Chargement depuis Google Sheet unique</div>
-        <div style="font-size:11px;color:#16A34A;margin-top:2px;">Un seul Sheet "Ecoles actives" — distribution automatique par IEPP, cycle et type</div>
+        <div style="font-size:12px;font-weight:700;color:#065F46;">Actualisation des données</div>
+        <div style="font-size:11px;color:#16A34A;margin-top:2px;">distribution automatique par IEPP, cycle et type</div>
       </div>
       <button id="btn-actualiser-iepp" onclick="loadEcolesIEPP()" style="background:#10B981;color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;">🔄 Actualiser</button>
     </div>
@@ -827,7 +827,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);}
       <span style="font-size:20px;">📊</span>
       <div style="flex:1;">
         <div style="font-size:12px;font-weight:700;color:#92400E;">Mise à jour automatique depuis Google Sheets</div>
-        <div style="font-size:11px;color:#B45309;margin-top:2px;">L'informaticien renseigne nom, matricule, contact, service dans le Sheet</div>
+        <div style="font-size:11px;color:#B45309;margin-top:2px;">L'agent renseigne nom, matricule, contact, service</div>
       </div>
       <button onclick="loadAdminFromSheet()" style="background:#F59E0B;color:#78350F;border:none;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;">🔄 Actualiser</button>
     </div>
@@ -851,8 +851,8 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);}
     <div class="cour-refresh-bar">
       <span style="font-size:20px;">📊</span>
       <div style="flex:1;">
-        <div style="font-size:12px;font-weight:700;color:#92400E;">Chargement depuis Google Sheets</div>
-        <div style="font-size:11px;color:#B45309;margin-top:2px;">Onglet "Courriers" — col. A=Type · B=Mois · C=Num · D=Date · E=Objet · F=Obs</div>
+        <div style="font-size:12px;font-weight:700;color:#92400E;">Actualisation des données</div>
+        <div style="font-size:11px;color:#B45309;margin-top:2px;">Mois - Numéro - Date - Objet - Observation</div>
       </div>
       <button id="btn-actualiser-courriers" onclick="loadCourriers()" style="background:#F59E0B;color:#78350F;border:none;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;">🔄 Actualiser</button>
     </div>
@@ -1041,7 +1041,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);}
 
 // ══ AUTH ══════════════════════════════════════════════════
 let isConnected = false;
-const PROTECTED_PAGES = ['accueil','secondaires','sec-prives','sec-publics','inspections','iepp1','iepp2','iepp3','admin','courriers'];
+const PROTECTED_PAGES = ['secondaires','sec-prives','sec-publics','inspections','iepp1','iepp2','iepp3','admin','courriers'];
 
 function openPwd() {
   document.getElementById('pwd-input').value = '';
