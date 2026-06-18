@@ -2169,7 +2169,7 @@ function renderGalerie() {
   el.innerHTML=g.length?g.map((p,i)=>`
     <div class="gallery-item" onclick="openGallery('${p.url}','${p.legende||''}')">
       <img src="${p.url}" alt="${p.legende||''}" loading="lazy">
-    </div>`).join(''):`<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--muted);font-size:12px;">Aucune photo dans data.js → galerie</div>`;
+    </div>`).join(''):`<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--muted);font-size:12px;">Aucune photo enregistrée</div>`;
 }
 function openGallery(url,leg){
   document.getElementById('gallery-fs-img').src=url;
