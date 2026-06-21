@@ -49,7 +49,7 @@ const DATA = {
     courriers_onglet: "Courriers",  // ← Nom exact de l'onglet (A=Type B=Mois C=Num D=Date E=Objet F=Obs)    
 
     // Lien Google Form — bouton S'enregistrer (Personnel Admin)
-    form_admin: "",  // ← Collez ici le lien de votre Google Form
+    form_admin: "https://forms.gle/vYNDCjxfFy8bKvwf6",  // ← Collez ici le lien de votre Google Form
 
     // Colonnes exactes de votre Sheet (en-têtes tels qu'ils apparaissent)
     admin_colonnes: {
