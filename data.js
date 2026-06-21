@@ -51,6 +51,8 @@ const DATA = {
     // Lien Google Form — bouton S'enregistrer (Personnel Admin)
     form_admin: "https://forms.gle/vYNDCjxfFy8bKvwf6",  // ← Collez ici le lien de votre Google Form
 
+    form_courriers:  "https://forms.gle/6sLYJ4pdATRBKG8u8",  // ← Lien Google Form pour enregistrer un courrier
+    
     // Colonnes exactes de votre Sheet (en-têtes tels qu'ils apparaissent)
     admin_colonnes: {
       SERVICE:   "Services",    // Colonne A
