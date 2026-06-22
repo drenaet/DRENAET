@@ -208,7 +208,7 @@ const DATA = {
     },
     {
       id:           "iepp4",
-      nom:          "IEPP GRAND-MORIE",
+      nom:          "IEPP AZAGUIE",
       icone:        "🏫",
       couleur:      "#2e0606",   // bleu
       inspecteur_nom:      "",
@@ -231,7 +231,7 @@ const DATA = {
     },
     {
       id:           "iepp5",
-      nom:          "IEPP AZAGUIE",
+      nom:          "IEPP GRAND MORIÉ",
       icone:        "🏫",
       couleur:      "#2e0606",   // bleu
       inspecteur_nom:      "",
