@@ -205,6 +205,75 @@ const DATA = {
       primaires_prives:    [],
       prescolaires_publics:[],
       prescolaires_prives: [],
+    },
+    {
+      id:           "iepp4",
+      nom:          "IEPP GRAND-MORIE",
+      icone:        "🏫",
+      couleur:      "#1565C0",   // bleu
+      inspecteur_nom:      "",
+      inspecteur_contact:  "",
+      inspecteur_photo:    "",
+      adjoint_nom:         "",
+      adjoint_contact:     "",
+      adjoint_photo:       "",
+
+      // Google Sheet IDs pour cette inspection (à remplir)
+      sheet_primaires_publics:  "",  // ← ID du Google Sheet IEPP1 primaires publics
+      sheet_primaires_prives:   "",  // ← ID du Google Sheet IEPP1 primaires privés
+      sheet_prescolaires_publics: "",
+      sheet_prescolaires_prives:  "",
+
+      primaires_publics:   [],  // rempli depuis Google Sheet
+      primaires_prives:    [],
+      prescolaires_publics:[],
+      prescolaires_prives: [],
+    },
+    {
+      id:           "iepp5",
+      nom:          "IEPP AZAGUIE",
+      icone:        "🏫",
+      couleur:      "#1565C0",   // bleu
+      inspecteur_nom:      "",
+      inspecteur_contact:  "",
+      inspecteur_photo:    "",
+      adjoint_nom:         "",
+      adjoint_contact:     "",
+      adjoint_photo:       "",
+
+      // Google Sheet IDs pour cette inspection (à remplir)
+      sheet_primaires_publics:  "",  // ← ID du Google Sheet IEPP1 primaires publics
+      sheet_primaires_prives:   "",  // ← ID du Google Sheet IEPP1 primaires privés
+      sheet_prescolaires_publics: "",
+      sheet_prescolaires_prives:  "",
+
+      primaires_publics:   [],  // rempli depuis Google Sheet
+      primaires_prives:    [],
+      prescolaires_publics:[],
+      prescolaires_prives: [],
+    },
+    {
+      id:           "iepp6",
+      nom:          "IEPP RUBINO",
+      icone:        "🏫",
+      couleur:      "#1565C0",   // bleu
+      inspecteur_nom:      "",
+      inspecteur_contact:  "",
+      inspecteur_photo:    "",
+      adjoint_nom:         "",
+      adjoint_contact:     "",
+      adjoint_photo:       "",
+
+      // Google Sheet IDs pour cette inspection (à remplir)
+      sheet_primaires_publics:  "",  // ← ID du Google Sheet IEPP1 primaires publics
+      sheet_primaires_prives:   "",  // ← ID du Google Sheet IEPP1 primaires privés
+      sheet_prescolaires_publics: "",
+      sheet_prescolaires_prives:  "",
+
+      primaires_publics:   [],  // rempli depuis Google Sheet
+      primaires_prives:    [],
+      prescolaires_publics:[],
+      prescolaires_prives: [],
     }
   ],
 
