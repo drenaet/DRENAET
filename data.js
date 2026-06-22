@@ -210,7 +210,7 @@ const DATA = {
       id:           "iepp4",
       nom:          "IEPP AZAGUIE",
       icone:        "🏫",
-      couleur:      "#2e0606",   // bleu
+      couleur:      "#7C3AED",   // bleu
       inspecteur_nom:      "",
       inspecteur_contact:  "",
       inspecteur_photo:    "",
@@ -233,7 +233,7 @@ const DATA = {
       id:           "iepp5",
       nom:          "IEPP GRAND MORIÉ",
       icone:        "🏫",
-      couleur:      "#2e0606",   // bleu
+      couleur:      "#0891B2",   // bleu
       inspecteur_nom:      "",
       inspecteur_contact:  "",
       inspecteur_photo:    "",
@@ -256,7 +256,7 @@ const DATA = {
       id:           "iepp6",
       nom:          "IEPP RUBINO",
       icone:        "🏫",
-      couleur:      "#2e0606",   // bleu
+      couleur:      "#B45309",   // bleu
       inspecteur_nom:      "",
       inspecteur_contact:  "",
       inspecteur_photo:    "",
