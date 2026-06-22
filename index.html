@@ -646,7 +646,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);}
       </div>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;position:relative;">
         <span style="font-size:18px;">✉️</span>
-        <a href="mailto:drenaet.agboville@education.gouv.ci" style="font-size:13px;color:#4ADE80;font-weight:500;text-decoration:none;" id="footer-email">drenaet.agboville@education.gouv.ci</a>
+        <a href="mailto:drenagbo@yahoo.fr" style="font-size:13px;color:#4ADE80;font-weight:500;text-decoration:none;" id="footer-email">drenagbo@yahoo.fr</a>
       </div>
 
       <!-- Titre MEDIA -->
@@ -867,7 +867,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);}
     <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:12px 14px;margin-bottom:16px;display:flex;align-items:center;gap:10px;">
       <span style="font-size:20px;">📊</span>
       <div style="flex:1;">
-        <div style="font-size:12px;font-weight:700;color:#92400E;">Mise à jour automatique depuis Google Sheets</div>
+        <div style="font-size:12px;font-weight:700;color:#92400E;">Actualisation des informations</div>
         <div style="font-size:11px;color:#B45309;margin-top:2px;">L'agent renseigne nom, matricule, contact, service</div>
       </div>
       <button onclick="loadAdminFromSheet()" style="background:#F59E0B;color:#78350F;border:none;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;">🔄 Actualiser</button>
@@ -903,7 +903,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);}
       <span style="font-size:20px;">📊</span>
       <div style="flex:1;">
         <div style="font-size:12px;font-weight:700;color:#92400E;">Actualisation des données</div>
-        <div style="font-size:11px;color:#B45309;margin-top:2px;">Mois - Numéro - Date - Objet - Observation</div>
+        <div style="font-size:11px;color:#B45309;margin-top:2px;">Réservé au Service Courriers & Archives</div>
       </div>
       <button id="btn-actualiser-courriers" onclick="loadCourriers()" style="background:#F59E0B;color:#78350F;border:none;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;">🔄 Actualiser</button>
     </div>
@@ -1115,7 +1115,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);}
 
 // ══ AUTH ══════════════════════════════════════════════════
 let isConnected = false;
-const PROTECTED_PAGES = ['secondaires','sec-prives','sec-publics','inspections','iepp1','iepp2','iepp3','iepp4','iepp5','iepp6','admin','courriers'];
+const PROTECTED_PAGES = ['admin','courriers'];
 
 function openPwd() {
   document.getElementById('pwd-input').value = '';
