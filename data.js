@@ -143,7 +143,7 @@ const DATA = {
       id:           "iepp1",
       nom:          "IEPP 1 AGBOVILLE",
       icone:        "🏫",
-      couleur:      "#1565C0",   // bleu
+      couleur:      "#2e0606",   // bleu
       inspecteur_nom:      "",
       inspecteur_contact:  "",
       inspecteur_photo:    "",
@@ -166,7 +166,7 @@ const DATA = {
       id:           "iepp2",
       nom:          "IEPP 2 AGBOVILLE",
       icone:        "🏫",
-      couleur:      "#10B981",   // vert
+      couleur:      "#2e0606",   // vert
       inspecteur_nom:      "",
       inspecteur_contact:  "",
       inspecteur_photo:    "",
@@ -188,7 +188,7 @@ const DATA = {
       id:           "iepp3",
       nom:          "IEPP 3 AGBOVILLE",
       icone:        "🏫",
-      couleur:      "#F59E0B",   // ambre
+      couleur:      "#2e0606",   // ambre
       inspecteur_nom:      "",
       inspecteur_contact:  "",
       inspecteur_photo:    "",
@@ -210,7 +210,7 @@ const DATA = {
       id:           "iepp4",
       nom:          "IEPP GRAND-MORIE",
       icone:        "🏫",
-      couleur:      "#1565C0",   // bleu
+      couleur:      "#2e0606",   // bleu
       inspecteur_nom:      "",
       inspecteur_contact:  "",
       inspecteur_photo:    "",
@@ -233,7 +233,7 @@ const DATA = {
       id:           "iepp5",
       nom:          "IEPP AZAGUIE",
       icone:        "🏫",
-      couleur:      "#1565C0",   // bleu
+      couleur:      "#2e0606",   // bleu
       inspecteur_nom:      "",
       inspecteur_contact:  "",
       inspecteur_photo:    "",
@@ -256,7 +256,7 @@ const DATA = {
       id:           "iepp6",
       nom:          "IEPP RUBINO",
       icone:        "🏫",
-      couleur:      "#1565C0",   // bleu
+      couleur:      "#2e0606",   // bleu
       inspecteur_nom:      "",
       inspecteur_contact:  "",
       inspecteur_photo:    "",
