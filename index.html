@@ -848,10 +848,13 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);}
     <div id="iepp-hub-cards"></div>
   </div>
 
-  <!-- ── PAGES IEPP INDIVIDUELLES (iepp1, iepp2, iepp3) ── -->
+  <!-- ── PAGES IEPP INDIVIDUELLES (iepp1, iepp2, iepp3, iepp4, iepp5, iepp6) ── -->
   <div class="page" id="page-iepp1"></div>
   <div class="page" id="page-iepp2"></div>
   <div class="page" id="page-iepp3"></div>
+  <div class="page" id="page-iepp4"></div>
+  <div class="page" id="page-iepp5"></div>
+  <div class="page" id="page-iepp6"></div>
 
   <!-- ── PAGE ADMIN ── -->
   <div class="page" id="page-admin">
@@ -1112,7 +1115,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);}
 
 // ══ AUTH ══════════════════════════════════════════════════
 let isConnected = false;
-const PROTECTED_PAGES = ['secondaires','sec-prives','sec-publics','inspections','iepp1','iepp2','iepp3','admin','courriers'];
+const PROTECTED_PAGES = ['admin','courriers'];
 
 function openPwd() {
   document.getElementById('pwd-input').value = '';
@@ -1896,6 +1899,9 @@ function loadEcolesIEPP(callback) {
         if      (inspN.includes('1')) ieppId = 'iepp1';
         else if (inspN.includes('2')) ieppId = 'iepp2';
         else if (inspN.includes('3')) ieppId = 'iepp3';
+        else if (inspN.includes('4')) ieppId = 'iepp4';
+        else if (inspN.includes('5')) ieppId = 'iepp5';
+        else if (inspN.includes('6')) ieppId = 'iepp6';
 
         if (!ieppId) {
           console.warn(`  ⚠️ IEPP non reconnu → "${inspRaw}"`);
