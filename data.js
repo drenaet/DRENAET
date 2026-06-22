@@ -77,7 +77,7 @@ const DATA = {
       {
         type:    "info",
         couleur: "blue",
-        emoji:   "photos/preview.jpg",
+        emoji:   "📋",
         titre:   "Bienvenue sur le portail DRENAET Agboville",
         texte:   "Plateforme officielle de la Direction Régionale de l'Éducation Nationale de l'alphabétisation et de l'Enseignement Technique d'Agboville. Toutes les informations sur les établissements et le personnel.",
         date:    "Juin 2026"
