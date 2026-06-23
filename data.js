@@ -168,9 +168,9 @@ const DATA = {
       nom:          "IEPP 2 AGBOVILLE",
       icone:        "🏫",
       couleur:      "#2e0606",   // vert
-      inspecteur_nom:      "",
+      inspecteur_nom:      "M. KASSOUMOU FOFANA",
       inspecteur_contact:  "",
-      inspecteur_photo:    "",
+      inspecteur_photo:    "photos/kf.jpg",
       adjoint_nom:         "",
       adjoint_contact:     "",
       adjoint_photo:       "",
