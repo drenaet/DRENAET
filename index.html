@@ -161,7 +161,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);}
 .search-wrap input{flex:1;border:none;background:transparent;font-family:'Outfit',sans-serif;font-size:14px;color:var(--text);outline:none;}
 
 .school-list{display:flex;flex-direction:column;gap:8px;}
-.school-card{background:#fff;border-radius:14px;padding:14px 16px;border:1px solid var(--border);display:flex;align-items:center;gap:12px;box-shadow:0 1px 6px rgba(0,0,0,.04);transition:transform .15s;}
+.school-card{background:#EFF6FF;border-radius:14px;padding:14px 16px;border:1px solid var(--border);display:flex;align-items:center;gap:12px;box-shadow:0 1px 6px rgba(0,0,0,.04);transition:transform .15s;}
 .school-card:active{transform:scale(.98);}
 .school-num{width:32px;height:32px;border-radius:8px;background:var(--light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--blue);flex-shrink:0;}
 .school-info{flex:1;min-width:0;}
@@ -1478,7 +1478,7 @@ function buildIEPPPage(iepp, bg) {
   pg.innerHTML=`
     <!-- En-tête -->
     <div style="margin-bottom:16px;">
-      <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:900;color:${bg};">${iepp.nom}</div>
+      <div style="font-family:'Outfit',sans-serif;font-size:17px;font-weight:900;color:${bg};">${iepp.nom}</div>
       <div style="font-size:11px;color:var(--muted);">${totalPrimPub+totalPrimPri+totalPresPub+totalPresPri} école(s) enregistrée(s)</div>
     </div>
 
