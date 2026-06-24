@@ -86,23 +86,23 @@ const DATA = {
     adresse: "Agboville, Côte d'Ivoire",
     email:   "non_defini@",
     annonces: [
-      {
-        type:    "info",
-        couleur: "blue",
-        emoji:   "📋",
-        image:  "photos/preview.jpg",
-        titre:   "Bienvenue sur le portail DRENAET Agboville",
-        texte:   "Plateforme officielle de la Direction Régionale de l'Éducation Nationale de l'alphabétisation et de l'Enseignement Technique d'Agboville. Toutes les informations sur les établissements et le personnel.",
-        date:    "Juin 2026"
-      },
-      {
-        type:    "urgent",
-        couleur: "orange",
-        emoji:   "📢",
-        titre:   "Collecte des données en cours",
-        texte:   "Les établissements secondaires sont invités à renseigner leurs informations via le formulaire Google Forms transmis par la DRENAET.",
-        date:    "Juin 2026"
-      }
+    //  {
+    //    type:    "",
+    //    couleur: "",
+   //     emoji:   "",
+   //     image:  "",
+   //     titre:   "Bienvenue sur le portail DRENAET Agboville",
+     //   texte:   "Plateforme officielle de la Direction Régionale de l'Éducation Nationale de l'alphabétisation et de l'Enseignement Technique d'Agboville. Toutes les informations sur les établissements et le personnel.",
+    //    date:    "Juin 2026"
+  //    },
+   //   {
+   //     type:    "urgent",
+  //      couleur: "orange",
+    //    emoji:   "📢",
+  //      titre:   "Collecte des données en cours",
+   //     texte:   "Les établissements secondaires sont invités à renseigner leurs informations via le formulaire Google Forms transmis par la DRENAET.",
+  //      date:    "Juin 2026"
+ //     }
     ]
   },
 
