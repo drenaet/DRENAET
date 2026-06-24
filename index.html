@@ -1409,7 +1409,21 @@ function updateAnnonce(i) {
   const a=annonces[i];
   const el=document.getElementById('annonce-texte');
   el.parentElement.classList.add('fade');
-  setTimeout(()=>{el.textContent=a.texte||'';el.parentElement.classList.remove('fade');},200);
+  setTimeout(() => {
+    // 1. On récupère le texte brut
+    let texteFormate = a.texte || '';
+
+    // 2. On remplace les sauts de ligne du formulaire par des <br>
+    texteFormate = texteFormate.replace(/\n/g, '<br>');
+
+    // 3. LA LIGNE MAGIQUE : On transforme les *texte* en <b>texte</b>
+    texteFormate = texteFormate.replace(/\*(.*?)\*/g, '<b>$1</b>');
+
+    // 4. On injecte le tout dans la page
+    el.innerHTML = texteFormate;
+    
+    el.parentElement.classList.remove('fade');
+  }, 200);
   document.getElementById('annonce-nav-info').textContent=annonces.length>1?`${i+1} / ${annonces.length}`:'';
 }
 function carouselNext(){ updateAnnonce(carouselIdx+1); }
