@@ -127,7 +127,8 @@ const DATA = {
       { id:"secretariat", nom:"Secrétariat",         icone:"📝", agents:[] },
       { id:"examens",     nom:"Examens et Concours", icone:"🎓", agents:[] },
       { id:"rh",          nom:"Ressources Humaines", icone:"👥", agents:[] },
-      { id:"informatique",nom:"Informatique",         icone:"💻", agents:[] },
+      { id:"informatique", nom:"Informatique",         icone:"💻", agents:[] },
+      { id:"communication", nom:"Communication",         icone:"📡", agents:[] },
       { id:"economat",    nom:"Economat",             icone:"💰", agents:[] },
       { id:"autre",       nom:"Courriers & Archives",  icone:"📬", agents:[] },
     ]
