@@ -1339,7 +1339,7 @@ function loadInfoFromSheet() {
           if (urlBruteImage && (urlBruteImage.includes('drive.google.com') || urlBruteImage.includes('docs.google.com'))) {
             const match = urlBruteImage.match(/\/d\/([^/]+)/) || urlBruteImage.match(/id=([^&]+)/);
             if (match && match[1]) {
-              urlConvertie = `https://lh3.googleusercontent.com/d/${match[1]}`;
+              urlConvertie = `https://drive.google.com/uc?id=${match[1]}`;
             }
           }
 
