@@ -57,7 +57,7 @@ const DATA = {
     //   E = Emoji     → 📢 (affiché si pas d'image)
     //   F = Couleur   → "blue" | "green" | "orange"
     //   G = Image     → URL de l'image (laisser vide si pas d'image)
-    info:        "",          // ← ID du Google Sheet Info
+    info:        "11V194ANoTHWAhLGweb9raNjMBw8MtAUeFPPWMPN7V6M",          // ← ID du Google Sheet Info
     info_onglet: "Info",     // ← Nom exact de l'onglet
 
     // Lien Google Form — bouton S'enregistrer (Personnel Admin)
