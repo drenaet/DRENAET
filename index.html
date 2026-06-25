@@ -486,6 +486,10 @@ body {
   0% { transform: translate3d(0, 0, 0); }
   100% { transform: translate3d(-100%, 0, 0); }
   }
+/* Ajoute une marge au tout premier élément qui suit la bande pour le pousser vers le bas */
+#page-info .info-topband + * {
+  margin-top: 60px !important; 
+  }
 
   /* ── PAGE INFO — CAROUSEL ── */
 .carousel-wrap{position:relative;border-radius:20px;overflow:hidden;margin-bottom:18px;box-shadow:0 6px 24px rgba(0,0,0,.15);}
