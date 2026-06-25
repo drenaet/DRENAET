@@ -426,33 +426,82 @@ body {
 .pwd-badge{position:absolute;top:-10px;right:16px;background:var(--accent);color:var(--navy);font-size:9px;font-weight:700;padding:3px 10px;border-radius:20px;}
 
 /* ==========================================
-   FIX : ALIGNEMENT BANDE INFO & CAROUSEL
+   DÉFILEMENT FLUIDE ET REPOSITIONNEMENT BANDE INFO
    ========================================== */
 
-/* 1. On fixe la bande info pour qu'elle soit collée sous la topbar */
+/* 1. Configuration de la bande principale collée sous la topbar */
 #page-info .info-topband {
   position: fixed;
-  top: 60px;            /* Aligné pile sous votre topbar principale */
+  top: 60px;            /* Aligné sous votre topbar globale */
   left: 0;
   width: 100%;
-  height: 45px;         /* Hauteur fixe de la bande */
-  z-index: 999;         /* Passe au-dessus du carousel et des flèches (< et >) */
+  height: 42px;         /* Hauteur fine pour un style bandeau moderne */
+  padding: 0;
   margin: 0 !important;
   border-radius: 0 !important;
+  display: flex;
+  align-items: center;
+  overflow: hidden;     /* Requis : masque tout le texte qui déborde à gauche et à droite */
+  z-index: 999;
+  background: linear-gradient(135deg, var(--navy), var(--blue));
 }
 
-/* 2. On pousse TOUT le contenu de la page (carousel inclus) vers le bas */
-#page-info {
-  padding-top: 45px !important; /* Crée une zone vide de 45px (la taille exacte de la bande) */
-}
-
-/* 3. Sécurité pour l'icône du temple */
+/* 2. Fixer l'icône à gauche avec un fond opaque pour masquer le texte qui passe en dessous */
 #page-info .info-topband-icon {
-  font-size: 1.2rem;
-  margin-right: 15px;
-  z-index: 1000;
+  font-size: 1.1rem;
+  padding: 0 12px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  background: var(--navy); /* Fond uni opaque (début de votre dégradé) */
+  z-index: 1000;           /* Reste impérativement au-dessus du texte qui défile */
   position: relative;
 }
+
+/* 3. Le conteneur de texte détaché (position absolue) pour défiler sans aucune contrainte */
+#page-info .info-topband > div:not(.info-topband-icon) {
+  position: absolute;
+  white-space: nowrap;    /* Force tout le texte à rester sur une seule ligne */
+  display: flex;
+  align-items: center;
+  gap: 15px;              /* Espace entre le Titre et le Sous-titre */
+  height: 100%;
+  animation: defilement-drenat 22s linear infinite; /* 22s = vitesse globale de défilement */
+}
+
+/* 4. Alignement parfait du Titre et du Sous-titre sur la même ligne */
+#page-info .info-topband-title, 
+#page-info .info-topband-sub {
+  display: inline-block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #ffffff !important;
+}
+
+#page-info .info-topband-title {
+  font-size: 13px;
+  font-weight: bold;
+}
+
+#page-info .info-topband-sub {
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+/* 5. L'animation : Fait entrer le texte à droite (100vw) et le fait sortir à gauche (-100%) */
+@keyframes defilement-drenat {
+  0% {
+    transform: translate3d(100vw, 0, 0);
+  }
+  100% {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+
+/* 6. Pousser le carousel (et le reste de la page) vers le bas pour supprimer la superposition */
+#page-info {
+  padding-top: 42px !important; /* Même taille que la hauteur de la bande pour caler le carousel au millimètre */
+  }
 
   /* ── PAGE INFO — CAROUSEL ── */
 .carousel-wrap{position:relative;border-radius:20px;overflow:hidden;margin-bottom:18px;box-shadow:0 6px 24px rgba(0,0,0,.15);}
