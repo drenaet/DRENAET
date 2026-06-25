@@ -425,71 +425,34 @@ body {
 .pwd-btn:active{transform:scale(.97);}
 .pwd-badge{position:absolute;top:-10px;right:16px;background:var(--accent);color:var(--navy);font-size:9px;font-weight:700;padding:3px 10px;border-radius:20px;}
 
-/* 1. Transformation du bloc en une bande fine et collée en haut */
+/* ==========================================
+   FIX : ALIGNEMENT BANDE INFO & CAROUSEL
+   ========================================== */
+
+/* 1. On fixe la bande info pour qu'elle soit collée sous la topbar */
 #page-info .info-topband {
   position: fixed;
-  top: 60px;          /* Ajustez cette valeur selon la hauteur réelle de votre topbar globale */
+  top: 60px;            /* Aligné pile sous votre topbar principale */
   left: 0;
   width: 100%;
-  height: 45px;       /* Hauteur réduite pour en faire une bande discrète et moderne */
-  border-radius: 0;   /* On enlève les grands bords arrondis visibles sur la capture */
-  margin: 0;
-  padding: 0 15px;
-  display: flex;
-  align-items: center;
-  overflow: hidden;   /* Cache tout ce qui dépasse de la bande pendant le défilement */
-  z-index: 99;        /* S'assure que la bande reste au-dessus du contenu de la page */
+  height: 45px;         /* Hauteur fixe de la bande */
+  z-index: 999;         /* Passe au-dessus du carousel et des flèches (< et >) */
+  margin: 0 !important;
+  border-radius: 0 !important;
 }
 
-/* 2. Fixer l'icône à gauche pour qu'elle ne bouge pas */
+/* 2. On pousse TOUT le contenu de la page (carousel inclus) vers le bas */
+#page-info {
+  padding-top: 45px !important; /* Crée une zone vide de 45px (la taille exacte de la bande) */
+}
+
+/* 3. Sécurité pour l'icône du temple */
 #page-info .info-topband-icon {
   font-size: 1.2rem;
   margin-right: 15px;
-  z-index: 100;       /* Reste au-dessus du texte qui défile */
-  background: inherit; /* Garde le dégradé de fond pour masquer le texte qui passe derrière elle */
-  padding-right: 10px;
-  display: flex;
-  align-items: center;
-  height: 100%;
+  z-index: 1000;
+  position: relative;
 }
-
-/* 3. Conteneur du texte : Déclenchement de l'animation */
-#page-info .info-topband > div:not(.info-topband-icon) {
-  display: flex;
-  align-items: center;
-  gap: 20px;          /* Espace entre le titre et le sous-titre */
-  white-space: nowrap;/* Empêche le texte de revenir à la ligne */
-  padding-left: 100%; /* Fait démarrer le texte tout à fait à droite, hors de l'écran */
-  animation: defilement-drenat 25s linear infinite; /* 25 secondes pour faire tout le tour */
-}
-
-/* 4. Alignement du Titre et du Sous-titre sur la même ligne */
-#page-info .info-topband-title, 
-#page-info .info-topband-sub {
-  display: inline-block;
-  margin: 0;
-  padding: 0;
-}
-
-#page-info .info-topband-title {
-  font-size: 0.95rem;
-  font-weight: bold;
-}
-
-#page-info .info-topband-sub {
-  font-size: 0.85rem;
-  opacity: 0.9; /* Légèrement plus clair pour détacher du titre */
-}
-
-/* 5. L'effet de tapis roulant (Marquee) */
-@keyframes defilement-drenat {
-  0% { transform: translate3d(0, 0, 0); }
-  100% { transform: translate3d(-100%, 0, 0); }
-  }
-/* Ajoute une marge au tout premier élément qui suit la bande pour le pousser vers le bas */
-#page-info .info-topband + * {
-  margin-top: 60px !important; 
-  }
 
   /* ── PAGE INFO — CAROUSEL ── */
 .carousel-wrap{position:relative;border-radius:20px;overflow:hidden;margin-bottom:18px;box-shadow:0 6px 24px rgba(0,0,0,.15);}
