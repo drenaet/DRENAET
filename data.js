@@ -59,7 +59,7 @@ const DATA = {
     //   G = Image     → URL de l'image (laisser vide si pas d'image)
     info:        "11V194ANoTHWAhLGweb9raNjMBw8MtAUeFPPWMPN7V6M",          // ← ID du Google Sheet Info
     info_onglet: "Info",     // ← Nom exact de l'onglet
-
+    form_info:       "https://forms.gle/X3X6xez7gJGpxCsL9",  // ← Lien Google Form pour diffuser une info (service Communication)
     // Lien Google Form — bouton S'enregistrer (Personnel Admin)
     form_admin: "https://forms.gle/vYNDCjxfFy8bKvwf6",  // ← Collez ici le lien de votre Google Form
 
