@@ -1082,7 +1082,7 @@ body {
   <button class="nav-btn" onclick="showPage('inspections')">
     <span class="n-ico">🏫</span><span class="n-lbl">IEPP</span>
   </button>
-  <button class="nav-btn" onclick="showPage('admin')">
+  <button class="nav-btn" id="nav-btn-admin" onclick="showPage('admin')" style="display: none;">
     <span class="n-ico">👥</span><span class="n-lbl">Admin</span>
   </button>
   <button class="nav-btn" onclick="showPage('courriers')">
@@ -1229,6 +1229,7 @@ document.addEventListener('keydown', e => {
   }
 });
 function checkPwd() {
+function checkPwd() {
   const val = document.getElementById('pwd-input').value;
   const mdp = DATA.mot_de_passe || 'drenaet2026';
   if (val === mdp) {
@@ -1237,7 +1238,12 @@ function checkPwd() {
     const btn = document.getElementById('btn-connect');
     btn.textContent = '✅ Connecté';
     btn.classList.add('connected');
-    btn.onclick = null;
+    
+    // FIX : On attribue la fonction de déconnexion au clic
+    btn.onclick = handleLogout;
+    
+    // ACTION : On fait apparaître dynamiquement l'onglet Admin
+    document.getElementById('nav-btn-admin').style.display = 'flex';
   } else {
     document.getElementById('pwd-error').classList.add('show');
     const box = document.getElementById('pwd-box');
@@ -1247,6 +1253,25 @@ function checkPwd() {
     document.getElementById('pwd-input').focus();
   }
 }
+
+// NOUVELLE FONCTION : Gère proprement la déconnexion
+function handleLogout() {
+  if (confirm("Voulez-vous vous déconnecter de l'espace Admin ?")) {
+    isConnected = false;
+    const btn = document.getElementById('btn-connect');
+    btn.innerHTML = '🔐 Connexion';
+    btn.classList.remove('connected');
+    
+    // On réassocie l'ouverture de la boîte de dialogue pour la prochaine fois
+    btn.onclick = openPwd;
+    
+    // On masque à nouveau l'onglet Admin de la barre de navigation
+    document.getElementById('nav-btn-admin').style.display = 'none';
+    
+    // Sécurité : Si l'utilisateur était sur la page admin, on le redirige vers la page info
+    showPage('info');
+  }
+  }
 function togglePwdEye() {
   const inp = document.getElementById('pwd-input');
   const eye = document.getElementById('pwd-eye');
