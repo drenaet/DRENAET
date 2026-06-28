@@ -66,8 +66,8 @@ const DATA = {
     form_courriers:  "https://forms.gle/6sLYJ4pdATRBKG8u8",  // ← Lien Google Form pour enregistrer un courrier
 
     //sheet Actualités & Événements  
-    actualites:  "1M4Qx7NjKnnmStW36-gnxbCiIF77YDomU4sx5BCzjBtY",
-    actualites_onglet: "actualites",
+    bandeau:  "1M4Qx7NjKnnmStW36-gnxbCiIF77YDomU4sx5BCzjBtY",
+    bandeau_onglet: "actualites",
     
     // Colonnes exactes de votre Sheet (en-têtes tels qu'ils apparaissent)
     admin_colonnes: {
