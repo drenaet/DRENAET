@@ -633,12 +633,9 @@ body {
   <div class="page active" id="page-info">
     <div class="info-topband">
       <div class="info-topband-icon">🏛️</div>
-      <div>
-        <div class="info-topband-title">STATISTIQUES</div>
-        <div class="info-topband-sub">de la Direction Régionale de l'Éducation Nationale de l'alphabétisation et de l'Enseignement Technique d'Agboville</div>
-
-        <span class="info-topband-title" style="margin-left: 40px;">Les IEPPs :</span>
-        <span class="info-topband-sub">IEPP 1 AGBOVILLE ● IEPP 2 AGBOVILLE ● IEPP 3 AGBOVILLE ● IEPP GRAND MORIE ● IEPP AZAGUIE ● IEPP RUBINO</span>
+      <div id="topband-text-content">
+        <div class="info-topband-title">DRENAET Agboville</div>
+        <div class="info-topband-sub">Direction Régionale de l'Éducation Nationale de l'alphabétisation et de l'Enseignement Technique</div>
       </div>
     </div>
 
@@ -1488,9 +1485,49 @@ function loadInfoFromSheet() {
     });
 }
 
+function loadBandeauFromSheet() {
+  const sheetId = (DATA.sheets?.info || '').trim();
+  const onglet = DATA.sheets?.bandeau_onglet || 'Bandeau';
+  if (!sheetId) return;
+
+  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&headers=1&sheet=${encodeURIComponent(onglet)}`;
+
+  fetch(url)
+    .then(r => r.text())
+    .then(raw => {
+      const json = JSON.parse(raw.replace(/^[\s\S]*?setResponse\(/, '').replace(/\);\s*$/, ''));
+      const rows = json.table?.rows || [];
+
+      function cv(row, idx) {
+        const c = row.c?.[idx];
+        if (!c) return '';
+        if (c.f !== null && c.f !== undefined) return String(c.f).trim();
+        return (c.v !== null && c.v !== undefined) ? String(c.v).trim() : '';
+      }
+
+      // Traitement des messages défilants
+      const messages = rows.map(row => {
+        return {
+          titre: cv(row, 0), // Colonne A
+          texte: cv(row, 1)  // Colonne B
+        };
+      }).filter(m => m.texte || m.titre); // Ignore les lignes vides
+
+      // Injection dans le bandeau défilant du haut
+      const topbandContent = document.getElementById('topband-text-content');
+      if (topbandContent && messages.length > 0) {
+        topbandContent.innerHTML = messages.map(m => {
+          return `<span class="info-topband-title">${m.titre}</span>
+                  <span class="info-topband-sub">${m.texte}</span>`;
+        }).join('<span style="margin: 0 40px; color: rgba(255,255,255,0.4); font-weight: bold;">•</span>');
+      }
+    })
+    .catch(err => console.error('Erreur lors du chargement du Bandeau défilant:', err));
+} 
+  
 let carouselIdx=0, carouselTimer=null;
 function renderInfo() {
-  const annonces = DATA.info?.annonces||[];
+  const annonces = DATA.info?.annonces||[];  
   const track = document.getElementById('carousel-track');
   const dots  = document.getElementById('carousel-dots');
   const couleurs = { blue:'blue', green:'green', orange:'orange', purple:'blue' };
@@ -2708,6 +2745,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const bandeau = document.getElementById('bandeau-info-sheet');
     if (bandeau) bandeau.style.display = 'flex';
     loadInfoFromSheet();
+    loadBandeauFromSheet(); // NOUNOUVELLE LIGNE : Charge le bandeau (Onglet "Bandeau")
   }
 
   // Bouton S'enregistrer Admin
