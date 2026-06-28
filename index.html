@@ -1664,7 +1664,7 @@ function loadInfoFromSheet() {
 function loadBandeauFromSheet() {
   // CORRECTION : On pointe maintenant sur le nouvel ID dédié au bandeau
   const sheetId = (DATA.sheets?.bandeau || '').trim();
-  const onglet = DATA.sheets?.bandeau_onglet || 'Feuille 1';
+  const onglet = DATA.sheets?.bandeau_onglet || 'bandeau';
   if (!sheetId) return; // Si aucun ID n'est renseigné, on ne fait rien
 
   const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&headers=1&sheet=${encodeURIComponent(onglet)}`;
