@@ -526,7 +526,24 @@ body {
 .carousel-btn.next{right:10px;}
 .annonce-body{background:transparent;padding:8px 0;border:none;box-shadow:none;margin-bottom:12px;min-height:auto;transition:opacity .25s;}
 .annonce-body.fade{opacity:0;}
-.annonce-texte{font-size:20px;line-height:1.7;color:var(--text);}
+.annonce-texte {
+  font-size: 20px;
+  line-height: 1.7;
+  color: var(--text);
+  
+  /* 1. Lissage parfait des pixels (Supprime l'effet baveux/flou) */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* 2. Force le navigateur à calculer le crénage le plus précis possible */
+  text-rendering: optimizeLegibility;
+  
+  /* 3. Effet Premium : On resserre subtilement les caractères à 20px */
+  letter-spacing: -0.015em;
+  
+  /* 4. Équilibre du tracé (ni trop fin, ni trop lourd) */
+  font-weight: 400; 
+  }
 .info-topband{background:linear-gradient(135deg,var(--navy),var(--blue));border-radius:16px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;}
 .info-topband-icon{font-size:26px;}
 .info-topband-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:900;color:#fff;}
