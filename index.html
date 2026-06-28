@@ -1486,9 +1486,10 @@ function loadInfoFromSheet() {
 }
 
 function loadBandeauFromSheet() {
-  const sheetId = (DATA.sheets?.info || '').trim();
-  const onglet = DATA.sheets?.bandeau_onglet || 'Bandeau';
-  if (!sheetId) return;
+  // CORRECTION : On pointe maintenant sur le nouvel ID dédié au bandeau
+  const sheetId = (DATA.sheets?.bandeau || '').trim();
+  const onglet = DATA.sheets?.bandeau_onglet || 'Feuille 1';
+  if (!sheetId) return; // Si aucun ID n'est renseigné, on ne fait rien
 
   const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&headers=1&sheet=${encodeURIComponent(onglet)}`;
 
@@ -1505,15 +1506,15 @@ function loadBandeauFromSheet() {
         return (c.v !== null && c.v !== undefined) ? String(c.v).trim() : '';
       }
 
-      // Traitement des messages défilants
+      // Lecture des colonnes A (Titre) et B (Message) du nouveau Sheet
       const messages = rows.map(row => {
         return {
           titre: cv(row, 0), // Colonne A
           texte: cv(row, 1)  // Colonne B
         };
-      }).filter(m => m.texte || m.titre); // Ignore les lignes vides
+      }).filter(m => m.texte || m.titre);
 
-      // Injection dans le bandeau défilant du haut
+      // Injection dans le bandeau défilant
       const topbandContent = document.getElementById('topband-text-content');
       if (topbandContent && messages.length > 0) {
         topbandContent.innerHTML = messages.map(m => {
@@ -1523,7 +1524,7 @@ function loadBandeauFromSheet() {
       }
     })
     .catch(err => console.error('Erreur lors du chargement du Bandeau défilant:', err));
-} 
+  }
   
 let carouselIdx=0, carouselTimer=null;
 function renderInfo() {
@@ -2741,11 +2742,16 @@ document.addEventListener('DOMContentLoaded', () => {
   if ((DATA.sheets?.courriers   || '').trim()) loadCourriers();
 
   // Info depuis Sheet
+  // 1. Chargement du Carrousel d'info (Premier Sheet)
   if ((DATA.sheets?.info || '').trim()) {
     const bandeau = document.getElementById('bandeau-info-sheet');
     if (bandeau) bandeau.style.display = 'flex';
     loadInfoFromSheet();
-    loadBandeauFromSheet(); // NOUNOUVELLE LIGNE : Charge le bandeau (Onglet "Bandeau")
+  }
+
+  // 2. Chargement INDÉPENDANT du Bandeau défilant (Deuxième Sheet)
+  if ((DATA.sheets?.bandeau || '').trim()) {
+    loadBandeauFromSheet();
   }
 
   // Bouton S'enregistrer Admin
