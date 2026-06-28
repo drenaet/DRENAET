@@ -524,8 +524,68 @@ body {
 .carousel-btn{position:absolute;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.85);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.2);}
 .carousel-btn.prev{left:10px;}
 .carousel-btn.next{right:10px;}
-.annonce-body{background:transparent;padding:8px 0;border:none;box-shadow:none;margin-bottom:12px;min-height:auto;transition:opacity .25s;}
+.annonce-body{background:transparent;padding:8px 0;border:none;box-shadow:none;margin-bottom:24px;height:45px;overflow:hidden;position:relative;display:flex;align-items:center;transition:opacity .25s;
 .annonce-body.fade{opacity:0;}
+/* ── LE RESTE DU NOUVEAU CSS À COLLER ICI ── */
+.actualites-section {
+  margin-top: 16px;
+}
+.actualites-titre {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 16px;
+}
+.actualites-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.actualite-card {
+  display: flex;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+.actualite-img-wrapper {
+  width: 100px;
+  min-width: 100px;
+  height: 100px;
+}
+.actualite-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.actualite-content {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.actualite-date {
+  font-size: 0.75rem;
+  color: #7f8c8d;
+  margin-bottom: 4px;
+}
+.actualite-content h3 {
+  font-size: 1rem;
+  margin: 0 0 6px 0;
+  color: #34495e;
+}
+.actualite-content p {
+  font-size: 0.85rem;
+  margin: 0;
+  color: #555;
+  line-height: 1.4;
+}
+.lire-plus-annonce {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: bold;
+  margin-left: 5px;
+  }              
 .annonce-texte {
   font-size: 20px;
   line-height: 1.7;
@@ -674,9 +734,17 @@ body {
     <div class="carousel-dots" id="carousel-dots"></div>
 
     <div style="margin-top:16px;"></div>
-    <div class="annonce-body">
-      <div class="annonce-texte" id="annonce-texte">Chargement…</div>
-    </div>
+<div class="annonce-body">
+  <div class="annonce-texte" id="annonce-texte">Chargement…</div>
+</div>
+
+<!-- ── BLOC ACTUALITÉS INJECTÉ PAR SHEET ── -->
+<div class="actualites-section">
+  <h2 class="actualites-titre">📰 Actualités & Événements</h2>
+  <div class="actualites-container" id="actualites-container">
+    <div style="text-align: center; color: #7f8c8d; padding: 20px;">Chargement des actualités...</div>
+  </div>
+</div>
   </div>
 
   <!-- ── PAGE ACCUEIL ── -->
@@ -1433,6 +1501,87 @@ function setText(id, val) {
   if(el) el.textContent=val;
 }
 
+  // --- BLOC GESTION DES ACTUALITÉS DYNAMIQUES ---
+async function chargerActualites() {
+  try {
+    const sourceActualites = DATA.sheets?.actualites || "";
+    if (!sourceActualites.trim()) return;
+
+    // Extraction de l'ID du document Google Sheet
+    const matchId = sourceActualites.match(/\/d\/([a-zA-Z0-9-_]+)/);
+    const spreadsheetId = matchId ? matchId[1] : sourceActualites;
+
+    // URL pour récupérer la première feuille au format CSV
+    const urlActualites = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv`;
+
+    const reponse = await fetch(urlActualites);
+    const donneesCsv = await reponse.text();
+    
+    const lignes = determinerLignesCsv(donneesCsv);
+    const conteneur = document.getElementById("actualites-container");
+    if (!conteneur) return;
+    
+    conteneur.innerHTML = ""; 
+
+    if (lignes.length <= 1) {
+      conteneur.innerHTML = `<div style="text-align:center;color:#7f8c8d;padding:20px;">Aucune actualité pour le moment.</div>`;
+      return;
+    }
+
+    for (let i = 1; i < lignes.length; i++) {
+      const colonnes = lignes[i];
+      if (colonnes.length < 3) continue; 
+
+      const dateActu = colonnes[0];
+      const titreActu = colonnes[1];
+      const descActu = colonnes[2];
+      const imageActu = colonnes[3] || "images/default-placeholder.jpg"; 
+
+      const carteHtml = `
+        <div class="actualite-card">
+          <div class="actualite-img-wrapper">
+            <img src="${imageActu}" alt="${titreActu}" class="actualite-img" onerror="this.src='images/default-placeholder.jpg'">
+          </div>
+          <div class="actualite-content">
+            <span class="actualite-date">${dateActu}</span>
+            <h3>${titreActu}</h3>
+            <p>${descActu}</p>
+          </div>
+        </div>
+      `;
+      conteneur.innerHTML += carteHtml;
+    }
+  } catch (erreur) {
+    console.error("Erreur lors du chargement des actualités :", erreur);
+    const conteneur = document.getElementById("actualites-container");
+    if (conteneur) {
+      conteneur.innerHTML = `<div style="text-align:center;color:#e74c3c;padding:20px;">Impossible de charger les actualités.</div>`;
+    }
+  }
+}
+
+function determinerLignesCsv(texteCsv) {
+  const lignesBrutes = texteCsv.split(/\r?\n/);
+  return lignesBrutes.map(ligne => {
+    const correspondance = ligne.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+    return correspondance.map(valeur => valeur.replace(/^"|"$/g, "").trim());
+  }).filter(l => l.length > 0);
+}
+
+function preparerTexteAnnonce(texteBrut) {
+  const limiteCaracteres = 110; 
+  if (texteBrut.length > limiteCaracteres) {
+    let texteTronque = texteBrut.substring(0, limiteCaracteres) + "...";
+    return `${texteTronque} <a href="#" class="lire-plus-annonce" onclick="ouvrirModalAnnonce('${texteBrut.replace(/'/g, "\\'")}')">Lire plus...</a>`;
+  }
+  return texteBrut;
+}
+
+function ouvrirModalAnnonce(texteComplet) {
+  event.preventDefault();
+  alert(texteComplet); // Modifiable par une jolie fenêtre Modal CSS/JS plus tard
+}
+  
 // ══ PAGE INFO ═════════════════════════════════════════════
 // ══ INFO — Chargement depuis Google Sheets ════════════════
 function loadInfoFromSheet() {
@@ -2768,6 +2917,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // 2. Chargement INDÉPENDANT du Bandeau défilant (Deuxième Sheet)
   if ((DATA.sheets?.bandeau || '').trim()) {
     loadBandeauFromSheet();
+  }
+
+  // 3. Chargement INDÉPENDANT des Actualités (Nouveau Sheet référencé dans data.js)
+  if ((DATA.sheets?.actualites || '').trim()) {
+    chargerActualites();
   }
 
   // Bouton S'enregistrer Admin
