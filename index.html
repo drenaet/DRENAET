@@ -616,6 +616,11 @@ body {
   font-weight: 400; 
   }
 .info-topband{background:linear-gradient(135deg,var(--navy),var(--blue));border-radius:16px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;}
+  /* 🟢 À AJOUTER DANS LE CSS */
+#topband-text-content {
+  transition: opacity 0.25s ease-in-out;
+  flex: 1;
+  }
 .info-topband-icon{font-size:26px;}
 .info-topband-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:900;color:#fff;}
 .info-topband-sub{font-size:11px;color:rgba(255,255,255,.6);margin-top:1px;}
@@ -1690,16 +1695,38 @@ function loadBandeauFromSheet() {
         };
       }).filter(m => m.texte || m.titre);
 
-      // Injection dans le bandeau défilant
+      // 🟢 REMPLACEZ À PARTIR D'ICI JUSQU'À LA FIN DE LA FONCTION :
       const topbandContent = document.getElementById('topband-text-content');
       if (topbandContent && messages.length > 0) {
-        topbandContent.innerHTML = messages.map(m => {
-          return `<span class="info-topband-title">${m.titre}</span>
-                  <span class="info-topband-sub">${m.texte}</span>`;
-        }).join('<span style="margin: 0 40px; color: rgba(255,255,255,0.4); font-weight: bold;">•</span>');
+        let indexActuel = 0;
+
+        function faireDefilerBandeau() {
+          const m = messages[indexActuel];
+          
+          // 1. On lance un léger effet de disparition rapide
+          topbandContent.style.opacity = "0";
+          
+          // 2. On change le texte pendant qu'il est invisible, puis on le réaffiche
+          setTimeout(() => {
+            topbandContent.innerHTML = `
+              <div class="info-topband-title">${m.titre}</div>
+              <div class="info-topband-sub">${m.texte}</div>
+            `;
+            topbandContent.style.opacity = "1";
+          }, 250); // Temps de la transition
+
+          // 3. On passe à l'index suivant (revient à 0 arrivé à la fin)
+          indexActuel = (indexActuel + 1) % messages.length;
+        }
+
+        // Lancement immédiat du premier message
+        faireDefilerBandeau();
+
+        // Rotation automatique toutes les 5 secondes (5000ms)
+        setInterval(faireDefilerBandeau, 5000);
       }
     })
-    .catch(err => console.error('Erreur lors du chargement du Bandeau défilant:', err));
+    .catch(err => console.error("Erreur bandeau:", err));
   }
   
 let carouselIdx=0, carouselTimer=null;
