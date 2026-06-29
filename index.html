@@ -649,20 +649,110 @@ body {
   }
 #bandeau-info-sheet { display: none !important;}
 
-/* ── FOOTER ── */
-.footer-section{margin-top:24px;padding-top:20px;border-top:1px solid var(--border);}
-.footer-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;}
-.footer-info-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
-.footer-info-ico{font-size:16px;flex-shrink:0;}
-.footer-info-txt{font-size:13px;color:var(--text);}
-.footer-info-txt a{color:var(--sky);text-decoration:none;}
-.apfc-media-btn{background:#fff;border-radius:14px;padding:13px 16px;border:1px solid var(--border);display:flex;align-items:center;gap:12px;margin-bottom:10px;box-shadow:0 1px 6px rgba(0,0,0,.04);cursor:pointer;transition:transform .15s;}
-.apfc-media-btn:active{transform:scale(.98);}
-.apfc-media-btn-ico{width:38px;height:38px;border-radius:10px;background:var(--light);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.apfc-media-btn-lbl{font-size:13px;font-weight:700;color:var(--navy);}
-.apfc-media-btn-sub{font-size:10px;color:var(--muted);margin-top:1px;}
-.footer-copy{font-size:11px;color:var(--muted);text-align:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--border);}
+/* ── FOOTER AMÉLIORÉ ET PLEINE LARGEUR ── */
+.footer-section {
+  margin-top: 24px;
+  margin-left: -14px;       /* Casse le padding de la page sur mobile */
+  margin-right: -14px;      /* Casse le padding de la page sur mobile */
+  margin-bottom: -20px;     /* Colle parfaitement au bas de l'écran */
+  background: var(--navy, #1e293b); /* Fond sombre institutionnel (ou mettez 'transparent') */
+  padding: 24px 16px;       /* Aère le contenu à l'intérieur */
+  border-radius: 0;         /* 🚫 Supprime les bords arrondis de type carte */
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
 
+.footer-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.6); /* Texte adouci sur fond sombre */
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+.footer-info-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.footer-info-ico {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.footer-info-txt {
+  font-size: 13px;
+  color: #ffffff; /* Texte des contacts passé en blanc pour lisibilité */
+}
+
+.footer-info-txt a {
+  color: var(--sky, #38bdf8);
+  text-decoration: none;
+}
+
+/* Vos boutons médias APFC (préservés et mis en valeur) */
+.apfc-media-btn {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 13px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform .15s;
+}
+
+.apfc-media-btn:active {
+  transform: scale(.98);
+}
+
+.apfc-media-btn-ico {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--light, #f1f5f9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.apfc-media-btn-lbl {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy, #1e293b);
+}
+
+.apfc-media-btn-sub {
+  font-size: 10px;
+  color: var(--muted, #64748b);
+  margin-top: 1px;
+}
+
+.footer-copy {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Réajustement automatique pour les grands écrans (PC) */
+@media (min-width: 768px) {
+  .footer-section {
+    margin-left: -28px;     /* S'adapte au padding desktop de votre appli */
+    margin-right: -28px;
+    margin-bottom: -32px;
+    padding: 32px 24px;
+  }
+}
+  
 /* ── GALERIE ── */
 .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
 .gallery-item{border-radius:12px;overflow:hidden;aspect-ratio:1;cursor:pointer;position:relative;}
@@ -977,8 +1067,7 @@ body {
       </div>
 
       <!-- Copyright -->
-      <div style="height:1px;background:rgba(255,255,255,.15);margin-bottom:14px;margin-top:16px;"></div>
-      <div style="font-size:11px;color:rgba(255,255,255,.45);text-align:center;">© 2026 DRENAET Agboville — Tous droits réservés</div>
+      <div class="footer-copy">© 2026 DRENAET Agboville — Tous droits réservés</div>
     </div>
   </div>
 
