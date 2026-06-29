@@ -1569,17 +1569,17 @@ async function chargerActualites() {
       const titreActu = colonnes[1]; // Titre de l'actualité
       const descActu = colonnes[2];  // Description
 
-      // TRAITEMENT DU LIEN D'IMAGE GOOGLE FORMS (COLONNE D)
-      let urlBruteImage = colonnes[3] || "";
-      let imageActu = urlBruteImage.trim();
+      // 🟢 VERSION CORRIGÉE ET ULTRA-STABLE POUR LES IMAGES GOOGLE DRIVE
+let urlBruteImage = colonnes[3] || "";
+let imageActu = urlBruteImage.trim();
 
-      if (imageActu && (imageActu.includes('drive.google.com') || imageActu.includes('docs.google.com'))) {
-        const matchDrive = imageActu.match(/\/d\/([^/]+)/) || imageActu.match(/id=([^&]+)/);
-        if (matchDrive && matchDrive[1]) {
-          // Génération du lien d'affichage brut universel pour les balises img
-          imageActu = `https://drive.google.com/uc?id=${matchDrive[1]}`;
-        }
-      }
+if (imageActu && (imageActu.includes('drive.google.com') || imageActu.includes('docs.google.com'))) {
+  const matchDrive = imageActu.match(/\/d\/([^/]+)/) || imageActu.match(/id=([^&]+)/);
+  if (matchDrive && matchDrive[1]) {
+    // Utilisation du sous-domaine lh3 pour un affichage direct et instantané sans blocage
+    imageActu = `https://lh3.googleusercontent.com/d/${matchDrive[1]}`;
+  }
+}
 
       // Image de remplacement si le champ est resté vide dans le formulaire
       if (!imageActu) {
