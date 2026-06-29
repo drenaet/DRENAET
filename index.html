@@ -537,56 +537,74 @@ body {
   max-height: auto;
   }
 .annonce-body.fade{opacity:0;}
-/* ── LE RESTE DU NOUVEAU CSS À COLLER ICI ── */
+  
+/* SECTION ACTUALITÉS ÉPURÉE (SANS BORDURE, CONFONDUE AU BACKGROUND) */
 .actualites-section {
-  margin-top: 16px;
+  margin-top: 20px;
 }
+
 .actualites-titre {
   font-size: 1.2rem;
   font-weight: bold;
-  color: #2c3e50;
+  color: var(--text, #2c3e50);
   margin-bottom: 16px;
 }
+
 .actualites-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;            /* Espace propre entre chaque bloc d'actualité */
 }
+
 .actualite-card {
   display: flex;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
+  align-items: center;  /* Aligne verticalement l'image et le texte */
+  gap: 16px;            /* Espace direct entre l'image et le texte */
+  background: transparent; /* Fusion complète avec le fond du site */
+  box-shadow: none;     /* Aucune ombre */
+  border: none;         /* Aucune bordure */
+  padding: 8px 0;
 }
+
+/* Ajustement et déblocage de l'espace de l'image */
 .actualite-img-wrapper {
-  width: 100px;
-  min-width: 100px;
-  height: 100px;
+  width: 110px;
+  min-width: 110px;
+  height: 110px;
+  border-radius: 10px;  /* Coins légèrement arrondis pour l'esthétique de l'image */
+  overflow: hidden;
+  background-color: rgba(0,0,0,0.03); /* Léger fond neutre pendant le chargement */
 }
+
 .actualite-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover;    /* L'image occupe tout son espace sans se déformer */
 }
+
+/* Contenu textuel à côté */
 .actualite-content {
-  padding: 12px;
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
+
 .actualite-date {
   font-size: 0.75rem;
   color: #7f8c8d;
   margin-bottom: 4px;
 }
+
 .actualite-content h3 {
-  font-size: 1rem;
+  font-size: 1.05rem;
   margin: 0 0 6px 0;
-  color: #34495e;
+  color: var(--navy, #34495e);
+  font-weight: 600;
 }
+
 .actualite-content p {
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   margin: 0;
   color: #555;
   line-height: 1.4;
@@ -1523,12 +1541,11 @@ async function chargerActualites() {
     const sourceActualites = DATA.sheets?.actualites || "";
     if (!sourceActualites.trim()) return;
 
-    // Extraction de l'ID du document Google Sheet
     const matchId = sourceActualites.match(/\/d\/([a-zA-Z0-9-_]+)/);
     const spreadsheetId = matchId ? matchId[1] : sourceActualites;
 
-    // URL pour récupérer la première feuille au format CSV
-    const urlActualites = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv`;
+    // Cible explicitement l'onglet du Google Form
+    const urlActualites = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent("Réponses au formulaire 1")}`;
 
     const reponse = await fetch(urlActualites);
     const donneesCsv = await reponse.text();
@@ -1548,10 +1565,26 @@ async function chargerActualites() {
       const colonnes = lignes[i];
       if (colonnes.length < 3) continue; 
 
-      const dateActu = colonnes[0];
-      const titreActu = colonnes[1];
-      const descActu = colonnes[2];
-      const imageActu = colonnes[3] || "images/default-placeholder.jpg"; 
+      const dateActu = colonnes[0];  // Horodateur Google Form
+      const titreActu = colonnes[1]; // Question 1
+      const descActu = colonnes[2];  // Question 2
+      
+      // TRAITEMENT ET SÉCURISATION DE L'IMAGE GOOGLE FORMS (COLONNE D)
+      let urlBruteImage = colonnes[3] || "";
+      let imageActu = urlBruteImage.trim();
+
+      if (imageActu && (imageActu.includes('drive.google.com') || imageActu.includes('docs.google.com'))) {
+        const matchDrive = imageActu.match(/\/d\/([^/]+)/) || imageActu.match(/id=([^&]+)/);
+        if (matchDrive && matchDrive[1]) {
+          // Conversion en lien direct d'affichage haute performance
+          imageActu = `https://lh3.googleusercontent.com/d/${matchDrive[1]}`;
+        }
+      }
+
+      // Si aucune image n'a été fournie, application du placeholder
+      if (!imageActu) {
+        imageActu = "images/default-placeholder.jpg"; 
+      }
 
       const carteHtml = `
         <div class="actualite-card">
@@ -1559,7 +1592,7 @@ async function chargerActualites() {
             <img src="${imageActu}" alt="${titreActu}" class="actualite-img" onerror="this.src='images/default-placeholder.jpg'">
           </div>
           <div class="actualite-content">
-            <span class="actualite-date">${dateActu}</span>
+            <span class="actualite-date">📅 Enregistré le ${dateActu}</span>
             <h3>${titreActu}</h3>
             <p>${descActu}</p>
           </div>
@@ -1574,7 +1607,7 @@ async function chargerActualites() {
       conteneur.innerHTML = `<div style="text-align:center;color:#e74c3c;padding:20px;">Impossible de charger les actualités.</div>`;
     }
   }
-}
+  }
 
 function determinerLignesCsv(texteCsv) {
   const lignesBrutes = texteCsv.split(/\r?\n/);
