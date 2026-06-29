@@ -752,6 +752,24 @@ body {
     padding: 32px 24px;
   }
 }
+
+/* EXTENSION DU FOOTER SUR TOUTE LA LARGEUR DE L'ÉCRAN */
+.apfc-footer-bleed {
+  margin-left: -14px !important;  /* Supprime l'espace blanc à gauche */
+  margin-right: -14px !important; /* Supprime l'espace blanc à droite */
+  margin-bottom: -20px !important;/* Colle le footer tout en bas de la page */
+  border-radius: 0px !important;  /* Supprime tout effet d'arrondi de carte */
+}
+
+/* Ajustement pour les écrans de tablettes et ordinateurs (Desktop) */
+@media (min-width: 768px) {
+  .apfc-footer-bleed {
+    margin-left: -28px !important;
+    margin-right: -28px !important;
+    margin-bottom: -32px !important;
+    padding: 32px 28px !important; /* Donne plus d'espace interne sur grand écran */
+  }
+  }
   
 /* ── GALERIE ── */
 .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
@@ -925,8 +943,8 @@ body {
       <div class="bar-list" id="bar-list"></div>
     </div>
 
-    <!-- FOOTER style APFC -->
-    <div style="background:linear-gradient(135deg,#0B2340 0%,#1565C0 100%);border-radius:0px;padding:22px 20px;margin-top:8px;position:relative;overflow:hidden;">
+    <!-- FOOTER style APFC (CORRIGÉ PLEINE LARGEUR) -->
+    <div class="apfc-footer-bleed" style="background:linear-gradient(135deg,#0B2340 0%,#1565C0 100%); padding:22px 20px; margin-top:30px; position:relative; overflow:hidden;">
       <!-- Cercles décoratifs -->
       <div style="position:absolute;right:-30px;top:-30px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.06);pointer-events:none;"></div>
       <div style="position:absolute;left:-20px;bottom:-40px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none;"></div>
@@ -943,7 +961,7 @@ body {
       </div>
 
       <!-- Séparateur -->
-      <div style="height:1px;background:rgba(255,255,255,.15);margin-bottom:16px;position:relative;"></div>
+      <div style="height:1px;background:rgba(255,255,255,.15);margin-bottom:166px;position:relative; margin-bottom:16px;"></div>
 
       <!-- Slogan -->
       <div style="font-style:italic;font-size:13px;color:rgba(255,255,255,.75);line-height:1.6;margin-bottom:18px;position:relative;">
@@ -976,7 +994,7 @@ body {
       </a>
 
       <!-- Bouton Telegram -->
-      <div id="footer-tg-btn" onclick="openTgPwd()" style="display:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:13px 16px;display:none;align-items:center;gap:12px;margin-bottom:10px;cursor:pointer;position:relative;">
+      <div id="footer-tg-btn" onclick="openTgPwd()" style="display:none;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:13px 16px;align-items:center;gap:12px;margin-bottom:10px;cursor:pointer;position:relative;">
         <span style="width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#26A5E4"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.16 13.947l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.988.612z"/></svg>
         </span>
@@ -992,7 +1010,6 @@ body {
 
       <!-- Liens Utiles -->
       <div style="margin-top:16px;position:relative;">
-        <!-- En-tête cliquable -->
         <div onclick="toggleLiensUtiles()" style="display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;margin-bottom:10px;">
           <div style="width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
@@ -1004,15 +1021,12 @@ body {
           <div id="liens-utiles-arrow" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;transition:transform .3s;flex-shrink:0;">+</div>
         </div>
 
-        <!-- Contenu déroulant -->
         <div id="liens-utiles-body" style="display:none;flex-direction:column;gap:8px;">
-
           <!-- DPFC -->
           <a href="https://www.dpfc-ci.net" target="_blank" rel="noopener"
              style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;text-decoration:none;transition:background .2s;">
             <div style="width:42px;height:42px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">
-              <img src="https://www.dpfc-ci.net/favicon.ico" width="32" height="32" alt="DPFC"
-                   onerror="this.outerHTML='<span style=\'font-size:22px;\'>📚</span>';" style="object-fit:contain;">
+              <img src="https://www.dpfc-ci.net/favicon.ico" width="32" height="32" alt="DPFC" onerror="this.outerHTML='<span style=\'font-size:22px;\'>📚</span>';" style="object-fit:contain;">
             </div>
             <div style="flex:1;min-width:0;">
               <div style="font-size:13px;font-weight:700;color:#fff;line-height:1.3;">Direction de la Pédagogie et de la Formation Continue</div>
@@ -1025,8 +1039,7 @@ body {
           <a href="https://www.drheducationci.org" target="_blank" rel="noopener"
              style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;text-decoration:none;transition:background .2s;">
             <div style="width:42px;height:42px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">
-              <img src="https://www.drheducationci.org/favicon.ico" width="32" height="32" alt="DRH"
-                   onerror="this.outerHTML='<span style=\'font-size:22px;\'>👥</span>';" style="object-fit:contain;">
+              <img src="https://www.drheducationci.org/favicon.ico" width="32" height="32" alt="DRH" onerror="this.outerHTML='<span style=\'font-size:22px;\'>👥</span>';" style="object-fit:contain;">
             </div>
             <div style="flex:1;min-width:0;">
               <div style="font-size:13px;font-weight:700;color:#fff;line-height:1.3;">Direction des Ressources Humaines de l'Éducation</div>
@@ -1039,8 +1052,7 @@ body {
           <a href="https://www.education.gouv.ci" target="_blank" rel="noopener"
              style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;text-decoration:none;transition:background .2s;">
             <div style="width:42px;height:42px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">
-              <img src="https://www.education.gouv.ci/favicon.ico" width="32" height="32" alt="MEN"
-                   onerror="this.outerHTML='<div style=\'width:42px;height:42px;display:flex;border-radius:10px;overflow:hidden;\'><div style=\'flex:1;background:#F77F00;\'></div><div style=\'flex:1;background:#fff;\'></div><div style=\'flex:1;background:#009A44;\'></div></div>';" style="object-fit:contain;">
+              <img src="https://www.education.gouv.ci/favicon.ico" width="32" height="32" alt="MEN" onerror="this.outerHTML='<div style=\'width:42px;height:42px;display:flex;border-radius:10px;overflow:hidden;\'><div style=\'flex:1;background:#F77F00;\'></div><div style=\'flex:1;background:#fff;\'></div><div style=\'flex:1;background:#009A44;\'></div></div>';" style="object-fit:contain;">
             </div>
             <div style="flex:1;min-width:0;">
               <div style="font-size:13px;font-weight:700;color:#fff;line-height:1.3;">Ministère de l'Éducation Nationale</div>
@@ -1053,8 +1065,7 @@ body {
           <a href="https://www.fonctionpublique.gouv.ci" target="_blank" rel="noopener"
              style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;text-decoration:none;transition:background .2s;">
             <div style="width:42px;height:42px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">
-              <img src="https://www.fonctionpublique.gouv.ci/favicon.ico" width="32" height="32" alt="FP"
-                   onerror="this.outerHTML='<span style=\'font-size:22px;\'>🏛️</span>';" style="object-fit:contain;">
+              <img src="https://www.fonctionpublique.gouv.ci/favicon.ico" width="32" height="32" alt="FP" onerror="this.outerHTML='<span style=\'font-size:22px;\'>🏛️</span>';" style="object-fit:contain;">
             </div>
             <div style="flex:1;min-width:0;">
               <div style="font-size:13px;font-weight:700;color:#fff;line-height:1.3;">Ministère de la Fonction Publique</div>
@@ -1062,15 +1073,15 @@ body {
             </div>
             <span style="color:rgba(255,255,255,.5);font-size:16px;flex-shrink:0;">↗</span>
           </a>
-
         </div>
       </div>
 
       <!-- Copyright -->
-      <div class="footer-copy">© 2026 DRENAET Agboville — Tous droits réservés</div>
+      <div class="footer-copy" style="font-size:11px; color:rgba(255,255,255,.45); text-align:center; margin-top:20px; padding-top:14px; border-top:1px solid rgba(255,255,255,.15);">© 2026 DRENAET Agboville — Tous droits réservés</div>
     </div>
-  </div>
+  </div> <!-- 🛑 Conserve les fermetures de div d'origine pour ne pas briser la page -->
 
+          
   <!-- ── PAGE SECONDAIRES (hub) ── -->
   <div class="page" id="page-secondaires">
     <div class="hero" style="background:linear-gradient(135deg,#0B2340,#1565C0);">
