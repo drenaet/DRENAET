@@ -2542,7 +2542,7 @@ function loadAdminFromSheet() {
     return;
   }
 
-  const onglet = encodeURIComponent(DATA.sheets?.admin_onglet || 'Personnel');
+  const onglet = encodeURIComponent(DATA.sheets?.admin_onglet || 'Réponses au formulaire 1');
   const url    = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?sheet=${onglet}&tqx=out:json`;
 
   const btn = document.querySelector('[onclick="loadAdminFromSheet()"]');
@@ -2557,11 +2557,12 @@ function loadAdminFromSheet() {
       // ── Lire TOUTES les lignes brutes par position (A, B, C, D) ──
       // table.rows[0] = ligne 2 du Sheet (ligne 1 = en-têtes, ignorée par gviz)
       const lignes = (table.rows || []).map(row => ({
-        svcRaw:    valCell(row, 0),  // Colonne A — Services
-        nomAgent:  valCell(row, 1),  // Colonne B — Nom_Prenoms
-        poste:     valCell(row, 2),  // Colonne C — Poste
-        matricule: valCell(row, 3),  // Colonne D — Matricule
-        contact:   valCell(row, 4),  // Colonne E — Contact
+        svcRaw:    valCell(row, 1),  // Colonne A — Services
+        nomAgent:  valCell(row, 2),  // Colonne B — Nom_Prenoms
+        poste:     valCell(row, 3),  // Colonne C — Poste
+        matricule: valCell(row, 4),  // Colonne D — Matricule
+        contact:   valCell(row, 5),  // Colonne E — Contact
+        photo: valCell(urlConvertie(row, 6))
       }));
 
       console.log(`📊 ${lignes.length} ligne(s) lue(s) dans "Personnel"`);
