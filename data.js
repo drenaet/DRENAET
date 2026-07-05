@@ -75,6 +75,16 @@ const DATA = {
     actualites:  "1GjT-ryf1p5IMoaGT_UrHyCHMXGoR2z_Ql1QU-haVlx4",
     actualites_onglet: "actualites",
     
+  actualites_colonnes: {
+  DATE: 0,
+  TITRE: 1,
+  DESCRIPTION: 2,
+  IMAGE1: 3,
+  IMAGE2: 4,
+  IMAGE3: 5,
+  IMAGE4: 6
+    },
+    
     // Colonnes exactes de votre Sheet (en-têtes tels qu'ils apparaissent)
     admin_colonnes: {
       SERVICE:   "Services",    // Colonne A
