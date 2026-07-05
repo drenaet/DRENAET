@@ -2610,12 +2610,12 @@ function loadAdminFromSheet() {
 
       // Lecture par positions (0=A, 1=B, 2=C, 3=D, 4=E, 5=F)
       const lignes = (table.rows || []).map(row => ({
-        svcRaw:    valCell(row, 1),  // Services
-        nomAgent:  valCell(row, 2),  // Nom_Prenoms
-        poste:     valCell(row, 3),  // Poste
-        matricule: valCell(row, 4),  // Matricule
-        contact:   valCell(row, 5),  // Contact
-        photo:     valCell(row, 6)   // Photo (colonne F)
+        svcRaw:    valCell(row, 0),  // Services
+        nomAgent:  valCell(row, 1),  // Nom_Prenoms
+        poste:     valCell(row, 2),  // Poste
+        matricule: valCell(row, 3),  // Matricule
+        contact:   valCell(row, 4),  // Contact
+        photo:     valCell(row, 5)   // Photo (colonne F)
       }));
 
       // Nettoyer les services
