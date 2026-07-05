@@ -533,9 +533,9 @@ body {
 
   /*--Bloc du texte du caroussel*/
 .annonce-body {
-  background: transparent;
+  background:#fff;
   padding: 4px 0;
-  border: none;
+  border: 12;
   box-shadow: none;
   margin-bottom: 20px;   /* Espace constant et propre avec la section Actualités */
   display: flex;
@@ -548,7 +548,7 @@ body {
   
 /* SECTION ACTUALITÉS — TOUT EN BLOC VERTICAL (FUSIONNÉ AU BACKGROUND) */
 .actualites-section {
-  margin-top: 24px;
+  margin-top: 34px;
 }
 
 .actualites-titre {
@@ -655,37 +655,53 @@ body {
   }
 #bandeau-info-sheet { display: none !important;}
 
+/* Conteneur du carousel */
 .actualite-carousel {
   position: relative;
   width: 100%;
-  height: 200px;
-  border-radius: 12px;
+  height: 300px;           /* ← ajustez ici */
   overflow: hidden;
-  margin: 10px 0 12px;
+  border-radius: 12px;
   background: #f0f0f0;
 }
+
+/* Conteneur de l’image unique (même hauteur) */
+.actualite-img-wrapper {
+  width: 100%;
+  height: 300px;           /* ← identique au carousel */
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+/* Les slides du carousel */
 .actualite-carousel .carousel-slides {
   position: relative;
   width: 100%;
   height: 100%;
 }
+
 .actualite-carousel .carousel-slide {
   position: absolute;
   top: 0; left: 0;
-  width: 100%; height: 100%;
+  width: 100%;
+  height: 100%;
   opacity: 0;
   transition: opacity 0.5s ease;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 .actualite-carousel .carousel-slide.active {
   opacity: 1;
 }
-.actualite-carousel .actualite-img {
+
+/* L’image proprement dite */
+.actualite-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 .actualite-carousel .carousel-btn {
   position: absolute;
