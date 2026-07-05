@@ -655,7 +655,77 @@ body {
   }
 #bandeau-info-sheet { display: none !important;}
 
-/* ── FOOTER AMÉLIORÉ ET PLEINE LARGEUR ── */
+.actualite-carousel {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 10px 0 12px;
+  background: #f0f0f0;
+}
+.actualite-carousel .carousel-slides {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.actualite-carousel .carousel-slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.actualite-carousel .carousel-slide.active {
+  opacity: 1;
+}
+.actualite-carousel .actualite-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.actualite-carousel .carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.5);
+  color: white;
+  border: none;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.actualite-carousel .carousel-btn.prev { left: 8px; }
+.actualite-carousel .carousel-btn.next { right: 8px; }
+.actualite-carousel .carousel-dots {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+}
+.actualite-carousel .dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.actualite-carousel .dot.active {
+  background: #fff;
+}
+  
+  /* ── FOOTER AMÉLIORÉ ET PLEINE LARGEUR ── */
 .footer-section {
   margin-top: 24px;
   margin-left: -14px;       /* Casse le padding de la page sur mobile */
@@ -1643,6 +1713,23 @@ function setText(id, val) {
   if(el) el.textContent=val;
 }
 
+ // Convertit un lien Google Drive en URL d'image directe (serveur lh3)
+function driveToDirectImg(url) {
+  if (!url || typeof url !== 'string') return '';
+  const trimmed = url.trim();
+  if (!trimmed) return '';
+  // Si c'est déjà une URL directe d'image (jpg, png, etc.), on la renvoie telle quelle
+  if (trimmed.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) return trimmed;
+  // Si c'est un lien de partage Google Drive ou Google Forms
+  if (trimmed.includes('drive.google.com') || trimmed.includes('docs.google.com')) {
+    const match = trimmed.match(/\/d\/([^/]+)/) || trimmed.match(/id=([^&]+)/);
+    if (match && match[1]) {
+      return `https://lh3.googleusercontent.com/d/${match[1]}`;
+    }
+  }
+  return trimmed; // fallback
+}  
+  
   // --- BLOC GESTION DES ACTUALITÉS DYNAMIQUES ---
 async function chargerActualites() {
   try {
@@ -1652,8 +1739,9 @@ async function chargerActualites() {
     const matchId = sourceActualites.match(/\/d\/([a-zA-Z0-9-_]+)/);
     const spreadsheetId = matchId ? matchId[1] : sourceActualites;
 
-    // Lien pointant explicitement sur l'onglet de votre Google Form
-    const urlActualites = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent("Réponses au formulaire 1")}`;
+    // Utiliser l'onglet défini dans data.js, sinon fallback
+    const onglet = DATA.sheets?.actualites_onglet || "Réponses au formulaire 1";
+    const urlActualites = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(onglet)}`;
 
     const reponse = await fetch(urlActualites);
     const donneesCsv = await reponse.text();
@@ -1669,41 +1757,68 @@ async function chargerActualites() {
       return;
     }
 
+    // Indices des colonnes (0=Date, 1=Titre, 2=Description, 3=Image1, 4=Image2, 5=Image3, 6=Image4)
+    // Utiliser DATA.sheets.actualites_colonnes si défini, sinon ces valeurs par défaut
+    const cols = DATA.sheets?.actualites_colonnes || { DATE:0, TITRE:1, DESCRIPTION:2, IMAGE1:3, IMAGE2:4, IMAGE3:5, IMAGE4:6 };
+
     for (let i = 1; i < lignes.length; i++) {
       const colonnes = lignes[i];
       if (colonnes.length < 3) continue; 
 
-      const dateActu = colonnes[0];  // Horodateur du formulaire
-      const titreActu = colonnes[1]; // Titre de l'actualité
-      const descActu = colonnes[2];  // Description
+      const dateActu = colonnes[cols.DATE] || '';
+      const titreActu = colonnes[cols.TITRE] || '';
+      const descActu = colonnes[cols.DESCRIPTION] || '';
 
-      // 🟢 VERSION CORRIGÉE ET ULTRA-STABLE POUR LES IMAGES GOOGLE DRIVE
-let urlBruteImage = colonnes[3] || "";
-let imageActu = urlBruteImage.trim();
+      // Récupérer toutes les images (colonnes 3 à 6)
+      const images = [
+        colonnes[cols.IMAGE1],
+        colonnes[cols.IMAGE2],
+        colonnes[cols.IMAGE3],
+        colonnes[cols.IMAGE4]
+      ]
+      .filter(url => url && url.trim() !== '')
+      .map(url => driveToDirectImg(url.trim())); // ← Conversion Drive → direct
 
-if (imageActu && (imageActu.includes('drive.google.com') || imageActu.includes('docs.google.com'))) {
-  const matchDrive = imageActu.match(/\/d\/([^/]+)/) || imageActu.match(/id=([^&]+)/);
-  if (matchDrive && matchDrive[1]) {
-    // Utilisation du sous-domaine lh3 pour un affichage direct et instantané sans blocage
-    imageActu = `https://lh3.googleusercontent.com/d/${matchDrive[1]}`;
-  }
-}
-
-      // Image de remplacement si le champ est resté vide dans le formulaire
-      if (!imageActu) {
-        imageActu = "images/default-placeholder.jpg"; 
+      // Si aucune image, utiliser une image par défaut
+      if (images.length === 0) {
+        images.push('images/default-placeholder.jpg');
       }
 
-      // RESTRUCTURATION INTÉGRIE : TITRE -> IMAGE -> DESCRIPTION
+      // Construction du carousel (si plusieurs images) ou affichage unique
+      let carouselHtml = '';
+      if (images.length === 1) {
+        carouselHtml = `<div class="actualite-img-wrapper">
+          <img src="${images[0]}" alt="${titreActu}" class="actualite-img" onerror="this.src='images/default-placeholder.jpg'">
+        </div>`;
+      } else {
+        // Carousel avec plusieurs images
+        carouselHtml = `
+          <div class="actualite-carousel" data-index="0">
+            <div class="carousel-slides">
+              ${images.map((img, idx) => `
+                <div class="carousel-slide ${idx === 0 ? 'active' : ''}">
+                  <img src="${img}" alt="${titreActu} - ${idx+1}" class="actualite-img" onerror="this.src='images/default-placeholder.jpg'">
+                </div>
+              `).join('')}
+            </div>
+            ${images.length > 1 ? `
+              <button class="carousel-btn prev" onclick="carouselSlide(this, -1)">‹</button>
+              <button class="carousel-btn next" onclick="carouselSlide(this, 1)">›</button>
+              <div class="carousel-dots">
+                ${images.map((_, idx) => `<span class="dot ${idx === 0 ? 'active' : ''}" onclick="goToSlide(this)"></span>`).join('')}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }
+
       const carteHtml = `
         <div class="actualite-card">
           <div class="actualite-header">
             <span class="actualite-date">📅 Publié le ${dateActu}</span>
             <h3>${titreActu}</h3>
           </div>
-          <div class="actualite-img-wrapper">
-            <img src="${imageActu}" alt="${titreActu}" class="actualite-img" onerror="this.src='images/default-placeholder.jpg'">
-          </div>
+          ${carouselHtml}
           <div class="actualite-content">
             <p>${descActu}</p>
           </div>
@@ -1718,7 +1833,32 @@ if (imageActu && (imageActu.includes('drive.google.com') || imageActu.includes('
       conteneur.innerHTML = `<div style="text-align:center;color:#e74c3c;padding:20px;">Impossible de charger les actualités.</div>`;
     }
   }
-  }
+}
+
+  function carouselSlide(btn, direction) {
+  const carousel = btn.closest('.actualite-carousel');
+  if (!carousel) return;
+  const slides = carousel.querySelectorAll('.carousel-slide');
+  let current = parseInt(carousel.dataset.index) || 0;
+  const total = slides.length;
+  current = (current + direction + total) % total;
+  carousel.dataset.index = current;
+  slides.forEach((s, i) => s.classList.toggle('active', i === current));
+  const dots = carousel.querySelectorAll('.dot');
+  dots.forEach((d, i) => d.classList.toggle('active', i === current));
+}
+
+function goToSlide(dot) {
+  const carousel = dot.closest('.actualite-carousel');
+  if (!carousel) return;
+  const slides = carousel.querySelectorAll('.carousel-slide');
+  const dots = carousel.querySelectorAll('.dot');
+  const idx = Array.from(dots).indexOf(dot);
+  if (idx < 0 || idx >= slides.length) return;
+  carousel.dataset.index = idx;
+  slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+  dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+}
 
 function determinerLignesCsv(texteCsv) {
   const lignesBrutes = texteCsv.split(/\r?\n/);
