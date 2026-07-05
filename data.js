@@ -69,7 +69,11 @@ const DATA = {
 
     //sheet bandeau  
     bandeau:  "1M4Qx7NjKnnmStW36-gnxbCiIF77YDomU4sx5BCzjBtY",
-    bandeau_onglet: "actualites",
+    bandeau_onglet: "Réponses au formulaire 1",
+  bandeau_colonnes: {
+    TITRE: 1,   // Colonne B (index 1)
+    MESSAGE: 2  // Colonne C (index 2)
+  },
 
     // sheet Actualités & Événements
     actualites:  "1GjT-ryf1p5IMoaGT_UrHyCHMXGoR2z_Ql1QU-haVlx4",
