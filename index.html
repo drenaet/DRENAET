@@ -313,6 +313,47 @@ body {
 .obs-other{background:#F8FAFC;color:#475569;}
 .p-matricule{font-size:10px;font-weight:700;color:#DC2626;margin-top:1px;letter-spacing:.3px;}
 
+  .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  font-family: 'Playfair Display', serif;
+  flex-shrink: 0;
+  border: 2px solid rgba(255,255,255,.3);
+  background: linear-gradient(135deg, var(--navy), var(--blue));
+  position: relative;
+  overflow: hidden;
+}
+
+.avatar .agent-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+  position: absolute;
+  inset: 0;
+}
+
+.avatar .avatar-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--navy), var(--blue));
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+}
+  
 /* ── IEPP CARDS ── */
 .iepp-card{background:#fff;border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
 .iepp-hdr{padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer;}
@@ -2514,8 +2555,21 @@ function renderAdmin() {
 
 function renderAgentRow(a) {
   const ini = (a.nom||'A').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+
+  // Gestion de la photo : si elle existe, on affiche l’image, sinon les initiales
+  let avatarHtml = '';
+  if (a.photo && a.photo.trim() !== '') {
+    avatarHtml = `<img src="${a.photo}" alt="${a.nom}" class="agent-photo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">`;
+    // On ajoute un fallback (les initiales) en cas d’erreur de chargement
+    avatarHtml += `<div class="avatar-fallback">${ini}</div>`;
+  } else {
+    avatarHtml = `<div class="avatar-fallback" style="display:flex;">${ini}</div>`;
+  }
+
   return `<div class="person-row">
-    <div class="avatar other">${ini}</div>
+    <div class="avatar other" style="position:relative;overflow:hidden;${a.photo && a.photo.trim() !== '' ? 'padding:0;' : ''}">
+      ${avatarHtml}
+    </div>
     <div class="p-info">
       <div class="pname" style="white-space:normal;">${a.nom||'—'}</div>
       ${a.poste     ? `<div class="prole" style="color:var(--sky);font-weight:600;">${a.poste}</div>` : ''}
@@ -2542,7 +2596,7 @@ function loadAdminFromSheet() {
     return;
   }
 
-  const onglet = encodeURIComponent(DATA.sheets?.admin_onglet || 'Réponses au formulaire 1');
+  const onglet = encodeURIComponent(DATA.sheets?.admin_onglet || 'Réponses au formulaire 1);
   const url    = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?sheet=${onglet}&tqx=out:json`;
 
   const btn = document.querySelector('[onclick="loadAdminFromSheet()"]');
@@ -2554,25 +2608,21 @@ function loadAdminFromSheet() {
       const json = JSON.parse(text.replace(/^.*?({.*})\s*\).*$/s, '$1'));
       const table = json.table;
 
-      // ── Lire TOUTES les lignes brutes par position (A, B, C, D) ──
-      // table.rows[0] = ligne 2 du Sheet (ligne 1 = en-têtes, ignorée par gviz)
+      // Lecture par positions (0=A, 1=B, 2=C, 3=D, 4=E, 5=F)
       const lignes = (table.rows || []).map(row => ({
-        svcRaw:    valCell(row, 1),  // Colonne A — Services
-        nomAgent:  valCell(row, 2),  // Colonne B — Nom_Prenoms
-        poste:     valCell(row, 3),  // Colonne C — Poste
-        matricule: valCell(row, 4),  // Colonne D — Matricule
-        contact:   valCell(row, 5),  // Colonne E — Contact
-        photo: valCell(urlConvertie(row, 6))
+        svcRaw:    valCell(row, 1),  // Services
+        nomAgent:  valCell(row, 2),  // Nom_Prenoms
+        poste:     valCell(row, 3),  // Poste
+        matricule: valCell(row, 4),  // Matricule
+        contact:   valCell(row, 5),  // Contact
+        photo:     valCell(row, 6)   // Photo (colonne F)
       }));
 
-      console.log(`📊 ${lignes.length} ligne(s) lue(s) dans "Personnel"`);
-      lignes.forEach((l,i) => console.log(`  Ligne ${i+2}: svc="${l.svcRaw}" nom="${l.nomAgent}"`));
-
-      // ── Vider tous les services ──────────────────────────────────
+      // Nettoyer les services
       const services = DATA.personnel_admin?.services || [];
       services.forEach(s => s.agents = []);
 
-      // ── Table de correspondance : norm(valeur Sheet) → id service
+      // Table de correspondance service
       const TABLE = {
         'secretariat':         'secretariat',
         'secretariat general': 'secretariat',
@@ -2586,10 +2636,8 @@ function loadAdminFromSheet() {
         'communication':        'communication',
         'economat':            'economat',
         'autre':               'autre',
-        'autres':              'autre',
         'courriers':           'autre',
         'archives':            'autre',
-        'courriers archives':  'autre',
         'courriers et archives': 'autre',
       };
 
@@ -2597,44 +2645,45 @@ function loadAdminFromSheet() {
 
       lignes.forEach((l, idx) => {
         if (!l.nomAgent) { ignores++; return; }
-
-        // 2. IGNORER L'EN-TÊTE DU SHEET (Si gviz la renvoie)
+        // Ignorer l’en-tête (si elle apparaît)
         if (l.nomAgent === "Nom_Prenoms" || l.svcRaw === "Services") {
           console.log("ℹ️ Ligne d'en-tête détectée et ignorée.");
-        return; // On passe à la ligne suivante sans incrémenter les erreurs ou les ignores
+          return;
         }
-        
-        // Détecter le service via norm()
+
+        // Normaliser le service
         const svcN = norm(l.svcRaw);
         let svcId  = TABLE[svcN];
-
-        // Correspondance partielle si pas trouvée exactement
         if (!svcId) {
           for (const [key, val] of Object.entries(TABLE)) {
             if (svcN.includes(key) || key.includes(svcN)) { svcId = val; break; }
           }
         }
-
-        // Fallback → Courriers & Archives
         if (!svcId) {
-          console.warn(`  ⚠️ "${l.svcRaw}" (normalisé: "${svcN}") → Courriers & Archives`);
+          console.warn(`⚠️ "${l.svcRaw}" → Courriers & Archives`);
           svcId = 'autre';
         }
 
-        const svc = services.find(s => s.id === svcId)
-                 || services.find(s => s.id === 'autre');
-
+        const svc = services.find(s => s.id === svcId) || services.find(s => s.id === 'autre');
         if (svc) {
-          svc.agents.push({ nom: l.nomAgent, poste: l.poste, matricule: l.matricule, contact: l.contact, statut: 'present', service: l.svcRaw });
-          console.log(`  ✅ "${l.nomAgent}" → "${svc.nom}"`);
+          // Conversion de la photo si présente
+          const photoUrl = l.photo ? driveToDirectImg(l.photo) : '';
+          svc.agents.push({
+            nom: l.nomAgent,
+            poste: l.poste,
+            matricule: l.matricule,
+            contact: l.contact,
+            photo: photoUrl,   // ← URL directe ou vide
+            statut: 'present',
+            service: l.svcRaw
+          });
           distribues++;
         } else {
           ignores++;
         }
       });
 
-      console.log(`🎯 ${distribues} agent(s) distribué(s), ${ignores} ignoré(s)`);
-
+      console.log(`✅ ${distribues} agent(s) distribué(s)`);
       renderAdmin();
       const nbTotal = services.reduce((s, sv) => s + sv.agents.length, 0);
       const el = document.getElementById('cnt-admin');
@@ -2645,8 +2694,8 @@ function loadAdminFromSheet() {
       console.error('Erreur personnel:', err);
       if (btn) { btn.textContent = '❌ Erreur — voir console'; btn.disabled = false; }
     });
-}
-
+  }
+             
 // Lit la valeur d'une cellule par index de colonne (0 = A, 1 = B, ...)
 function valCell(row, colIndex) {
   const cell = row.c ? row.c[colIndex] : null;
