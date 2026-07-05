@@ -1746,6 +1746,30 @@ function driveToDirectImg(url) {
   }
   return trimmed; // fallback
 }  
+
+function convertirMarkdown(texte) {
+  if (!texte) return '';
+  // Échapper le HTML pour éviter les injections (sauf si vous faites confiance aux contributeurs)
+  let html = texte
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+  
+  // Italique : *texte* ou _texte_
+  html = html.replace(/(?:^|\s)\*([^*]+)\*(?=\s|$)/g, ' <i>$1</i>');
+  html = html.replace(/(?:^|\s)_([^_]+)_(?=\s|$)/g, ' <i>$1</i>');
+  
+  // Gras : **texte** ou __texte__
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  html = html.replace(/__([^_]+)__/g, '<b>$1</b>');
+  
+  // Retour à la ligne (si le formulaire utilise \n)
+  html = html.replace(/\n/g, '<br>');
+  
+  return html;
+  }
   
   // --- BLOC GESTION DES ACTUALITÉS DYNAMIQUES ---
 async function chargerActualites() {
@@ -1784,8 +1808,8 @@ async function chargerActualites() {
 
       const dateActu = colonnes[cols.DATE] || '';
       const titreActu = colonnes[cols.TITRE] || '';
-      const descActu = colonnes[cols.DESCRIPTION] || '';
-
+      const descBrut = colonnes[cols.DESCRIPTION] || '';
+      const descActu = convertirMarkdown(descBrut);
       // Récupérer toutes les images (colonnes 3 à 6)
       const images = [
         colonnes[cols.IMAGE1],
