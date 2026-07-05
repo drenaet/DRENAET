@@ -1992,66 +1992,74 @@ function loadInfoFromSheet() {
 }
 
 function loadBandeauFromSheet() {
-  // CORRECTION : On pointe maintenant sur le nouvel ID dédié au bandeau
   const sheetId = (DATA.sheets?.bandeau || '').trim();
-  const onglet = DATA.sheets?.bandeau_onglet || 'bandeau';
-  if (!sheetId) return; // Si aucun ID n'est renseigné, on ne fait rien
+  const onglet = DATA.sheets?.bandeau_onglet || 'Réponses au formulaire 1';
+  if (!sheetId) {
+    console.warn('Bandeau: aucun ID de sheet défini');
+    return;
+  }
 
   const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&headers=1&sheet=${encodeURIComponent(onglet)}`;
 
   fetch(url)
     .then(r => r.text())
     .then(raw => {
-      const json = JSON.parse(raw.replace(/^[\s\S]*?setResponse\(/, '').replace(/\);\s*$/, ''));
-      const rows = json.table?.rows || [];
+      try {
+        const json = JSON.parse(raw.replace(/^[\s\S]*?setResponse\(/, '').replace(/\);\s*$/, ''));
+        const rows = json.table?.rows || [];
 
-      function cv(row, idx) {
-        const c = row.c?.[idx];
-        if (!c) return '';
-        if (c.f !== null && c.f !== undefined) return String(c.f).trim();
-        return (c.v !== null && c.v !== undefined) ? String(c.v).trim() : '';
-      }
+        // Définition des colonnes : par défaut, Titre en B (index 1), Message en C (index 2)
+        const cols = DATA.sheets?.bandeau_colonnes || { TITRE: 1, MESSAGE: 2 };
 
-      // Lecture des colonnes A (Titre) et B (Message) du nouveau Sheet
-      const messages = rows.map(row => {
-        return {
-          titre: cv(row, 0), // Colonne A
-          texte: cv(row, 1)  // Colonne B
-        };
-      }).filter(m => m.texte || m.titre);
+        function cv(row, idx) {
+          const c = row.c?.[idx];
+          if (!c) return '';
+          if (c.f !== null && c.f !== undefined) return String(c.f).trim();
+          return (c.v !== null && c.v !== undefined) ? String(c.v).trim() : '';
+        }
 
-      // 🟢 REMPLACEZ À PARTIR D'ICI JUSQU'À LA FIN DE LA FONCTION :
-      const topbandContent = document.getElementById('topband-text-content');
-      if (topbandContent && messages.length > 0) {
+        const messages = rows
+          .map(row => ({
+            titre: cv(row, cols.TITRE),
+            texte: cv(row, cols.MESSAGE)
+          }))
+          .filter(m => m.texte || m.titre);
+
+        // Si aucun message, ne rien faire (on garde le texte par défaut)
+        if (!messages.length) {
+          console.log('Bandeau: aucun message trouvé');
+          return;
+        }
+
+        const topbandContent = document.getElementById('topband-text-content');
+        if (!topbandContent) return;
+
         let indexActuel = 0;
 
         function faireDefilerBandeau() {
           const m = messages[indexActuel];
-          
-          // 1. On lance un léger effet de disparition rapide
+          // Effet de fondu
           topbandContent.style.opacity = "0";
-          
-          // 2. On change le texte pendant qu'il est invisible, puis on le réaffiche
           setTimeout(() => {
             topbandContent.innerHTML = `
-              <div class="info-topband-title">${m.titre}</div>
-              <div class="info-topband-sub">${m.texte}</div>
+              <div class="info-topband-title">${m.titre || ''}</div>
+              <div class="info-topband-sub">${m.texte || ''}</div>
             `;
             topbandContent.style.opacity = "1";
-          }, 250); // Temps de la transition
-
-          // 3. On passe à l'index suivant (revient à 0 arrivé à la fin)
+          }, 250);
+          // Passer au message suivant (boucle)
           indexActuel = (indexActuel + 1) % messages.length;
         }
 
-        // Lancement immédiat du premier message
+        // Afficher le premier message immédiatement
         faireDefilerBandeau();
-
-        // Rotation automatique toutes les 5 secondes (5000ms)
+        // Rotation toutes les 5 secondes
         setInterval(faireDefilerBandeau, 5000);
+      } catch (e) {
+        console.error('Erreur parsing bandeau:', e);
       }
     })
-    .catch(err => console.error("Erreur bandeau:", err));
+    .catch(err => console.error('Erreur chargement bandeau:', err));
   }
   
 let carouselIdx=0, carouselTimer=null;
