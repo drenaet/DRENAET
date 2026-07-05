@@ -96,6 +96,7 @@ const DATA = {
       POSTE:     "Poste",       // Colonne C ← nouveau
       MATRICULE: "Matricule",   // Colonne D
       CONTACT:   "Contact",     // Colonne E
+      PHOTO:     "Photo",
     },
     
   },
