@@ -3016,7 +3016,7 @@ function formatDateHeureFR(d) {
 
 // Déduit le libellé du mois ("Juin 2026") à partir d'un objet Date
 function moisLabelFR(d) {
-  if (!d) return 'Sans mois';
+  if (!d) return '';
   return `${MOIS_FR[d.getMonth()]} ${d.getFullYear()}`;
 }
 
