@@ -2585,9 +2585,6 @@ function toggleSvc(id) {
 }
 
 // ══ CHARGEMENT PERSONNEL DEPUIS GOOGLE SHEET UNIQUE ═══════════════
-// Lit l'onglet "Personnel" et distribue chaque agent dans son service.
-// Lecture par POSITION de colonne (A=0, B=1, C=2, D=3) — plus fiable
-// que la lecture par nom d'en-tête qui peut varier selon gviz.
 
 function loadAdminFromSheet() {
   const sheetId = (DATA.sheets?.admin || '').trim();
@@ -2608,41 +2605,26 @@ function loadAdminFromSheet() {
       const json = JSON.parse(text.replace(/^.*?({.*})\s*\).*$/s, '$1'));
       const table = json.table;
 
-      // 🔍 Lire les en-têtes réels pour déboguer
-      const headers = (table.cols || []).map(c => c.label || '');
-      console.log('📋 En-têtes du Sheet Admin :', headers);
+      const headersReels = (table.cols || []).map(c => c.label || '');
+      console.log('📋 En-têtes du Sheet Admin :', headersReels);
 
-      // Lecture par positions : 0=Horodateur, 1=Services, 2=Nom, 3=Poste, 4=Matricule, 5=Contact, 6=Photo
-      const lignes = (table.rows || []).map(row => {
-        const get = (idx) => valCell(row, idx);
-        return {
-          horodateur: get(0),
-          svcRaw:     get(1),
-          nomAgent:   get(2),
-          poste:      get(3),
-          matricule:  get(4),
-          contact:    get(5),
-          photo:      get(6)
-        };
-      });
+      const rows = rowsFromTable(table); // déjà définie plus haut
+      console.log(`📊 ${rows.length} ligne(s) lue(s)`);
 
-      // Nettoyer les services
       const services = DATA.personnel_admin?.services || [];
       services.forEach(s => s.agents = []);
 
-      // Construire une table de correspondance à partir des noms de services définis
+      // Table de correspondance des services
       const serviceMap = {};
       services.forEach(s => {
-        const key = norm(s.nom);
-        serviceMap[key] = s.id;
-        // Alias pour "Courriers & Archives"
+        serviceMap[norm(s.nom)] = s.id;
         if (s.id === 'autre') {
           serviceMap['courriers'] = s.id;
           serviceMap['archives'] = s.id;
           serviceMap['courriers et archives'] = s.id;
         }
       });
-      // Ajouter manuellement d'autres alias si besoin
+      // Alias supplémentaires
       serviceMap['secretariat general'] = 'secretariat';
       serviceMap['examens'] = 'examens';
       serviceMap['examen et concours'] = 'examens';
@@ -2651,53 +2633,47 @@ function loadAdminFromSheet() {
       serviceMap['communication'] = 'communication';
       serviceMap['economat'] = 'economat';
 
+      const cols = DATA.sheets.admin_colonnes || {};
       let distribues = 0, ignores = 0;
 
-      lignes.forEach((l, idx) => {
-        if (!l.nomAgent) { ignores++; return; }
-        // Ignorer la ligne d'en-tête si elle remonte
-        if (l.nomAgent === "Nom_Prenoms" || l.svcRaw === "Services") {
-          console.log(`ℹ️ Ligne d'en-tête ignorée (ligne ${idx+2})`);
-          return;
-        }
+      rows.forEach((row, idx) => {
+        const svcRaw   = lireCol(row, cols.SERVICE, headersReels);
+        const nomAgent = lireCol(row, cols.NOM, headersReels);
+        const poste    = lireCol(row, cols.POSTE, headersReels);
+        const matricule = lireCol(row, cols.MATRICULE, headersReels);
+        const contact  = lireCol(row, cols.CONTACT, headersReels);
+        const photo    = lireCol(row, cols.PHOTO, headersReels);
 
-        // Normaliser le service saisi
-        const svcNorm = norm(l.svcRaw);
-        console.log(`🔎 Ligne ${idx+2} : Service saisi = "${l.svcRaw}" (normalisé = "${svcNorm}")`);
+        if (!nomAgent) { ignores++; return; }
+        if (nomAgent === "Nom_Prenoms" || svcRaw === "Services") return;
 
+        const svcNorm = norm(svcRaw);
         let svcId = null;
-        // Recherche : correspondance exacte ou partielle
         if (svcNorm) {
           for (const [key, id] of Object.entries(serviceMap)) {
             if (svcNorm.includes(key) || key.includes(svcNorm)) {
               svcId = id;
-              console.log(`✅ Correspondance trouvée : "${svcNorm}" → service "${key}" (id ${id})`);
               break;
             }
           }
         }
-        // Fallback : si non trouvé, on met dans 'autre'
-        if (!svcId) {
-          console.warn(`⚠️ Aucune correspondance pour "${l.svcRaw}" → affecté à Courriers & Archives`);
-          svcId = 'autre';
-        }
+        if (!svcId) svcId = 'autre';
 
         const svc = services.find(s => s.id === svcId) || services.find(s => s.id === 'autre');
         if (svc) {
-          const photoUrl = l.photo ? driveToDirectImg(l.photo) : '';
+          const photoUrl = photo ? driveToDirectImg(photo) : '';
+          console.log(`📷 Photo pour ${nomAgent} : ${photoUrl}`);
           svc.agents.push({
-            nom: l.nomAgent,
-            poste: l.poste,
-            matricule: l.matricule,
-            contact: l.contact,
+            nom: nomAgent,
+            poste: poste,
+            matricule: matricule,
+            contact: contact,
             photo: photoUrl,
             statut: 'present',
-            service: l.svcRaw
+            service: svcRaw
           });
           distribues++;
-        } else {
-          ignores++;
-        }
+        } else ignores++;
       });
 
       console.log(`✅ ${distribues} agent(s) distribué(s), ${ignores} ignoré(s)`);
@@ -2711,21 +2687,13 @@ function loadAdminFromSheet() {
       console.error('Erreur chargement personnel:', err);
       if (btn) { btn.textContent = '❌ Erreur — voir console'; btn.disabled = false; }
     });
-  }    
+  }
              
 // Lit la valeur d'une cellule par index de colonne (0 = A, 1 = B, ...)
 function valCell(row, colIndex) {
   const cell = row.c ? row.c[colIndex] : null;
   if (!cell || cell.v === null || cell.v === undefined) return '';
   return String(cell.v).trim();
-}
-
-// Normalise une chaîne : minuscules, sans accents, sans espaces superflus
-function norm(s) {
-  if (!s) return '';
-  return s.toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // retire accents
-    .trim();
 }
   
 // ══ CHARGEMENT ÉCOLES IEPP — SHEET UNIQUE ════════════════════════
