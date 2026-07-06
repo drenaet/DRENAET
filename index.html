@@ -2585,7 +2585,6 @@ function toggleSvc(id) {
 }
 
 // ══ CHARGEMENT PERSONNEL DEPUIS GOOGLE SHEET UNIQUE ═══════════════
-
 function loadAdminFromSheet() {
   const sheetId = (DATA.sheets?.admin || '').trim();
   if (!sheetId) {
@@ -2605,26 +2604,41 @@ function loadAdminFromSheet() {
       const json = JSON.parse(text.replace(/^.*?({.*})\s*\).*$/s, '$1'));
       const table = json.table;
 
-      const headersReels = (table.cols || []).map(c => c.label || '');
-      console.log('📋 En-têtes du Sheet Admin :', headersReels);
+      // 🔍 Lire les en-têtes réels pour déboguer
+      const headers = (table.cols || []).map(c => c.label || '');
+      console.log('📋 En-têtes du Sheet Admin :', headers);
 
-      const rows = rowsFromTable(table); // déjà définie plus haut
-      console.log(`📊 ${rows.length} ligne(s) lue(s)`);
+      // Lecture par positions : 0=Horodateur, 1=Services, 2=Nom, 3=Poste, 4=Matricule, 5=Contact, 6=Photo
+      const lignes = (table.rows || []).map(row => {
+        const get = (idx) => valCell(row, idx);
+        return {
+          horodateur: get(0),
+          svcRaw:     get(1),
+          nomAgent:   get(2),
+          poste:      get(3),
+          matricule:  get(4),
+          contact:    get(5),
+          photo:      get(6)
+        };
+      });
 
+      // Nettoyer les services
       const services = DATA.personnel_admin?.services || [];
       services.forEach(s => s.agents = []);
 
-      // Table de correspondance des services
+      // Construire une table de correspondance à partir des noms de services définis
       const serviceMap = {};
       services.forEach(s => {
-        serviceMap[norm(s.nom)] = s.id;
+        const key = norm(s.nom);
+        serviceMap[key] = s.id;
+        // Alias pour "Courriers & Archives"
         if (s.id === 'autre') {
           serviceMap['courriers'] = s.id;
           serviceMap['archives'] = s.id;
           serviceMap['courriers et archives'] = s.id;
         }
       });
-      // Alias supplémentaires
+      // Ajouter manuellement d'autres alias si besoin
       serviceMap['secretariat general'] = 'secretariat';
       serviceMap['examens'] = 'examens';
       serviceMap['examen et concours'] = 'examens';
@@ -2633,47 +2647,53 @@ function loadAdminFromSheet() {
       serviceMap['communication'] = 'communication';
       serviceMap['economat'] = 'economat';
 
-      const cols = DATA.sheets.admin_colonnes || {};
       let distribues = 0, ignores = 0;
 
-      rows.forEach((row, idx) => {
-        const svcRaw   = lireCol(row, cols.SERVICE, headersReels);
-        const nomAgent = lireCol(row, cols.NOM, headersReels);
-        const poste    = lireCol(row, cols.POSTE, headersReels);
-        const matricule = lireCol(row, cols.MATRICULE, headersReels);
-        const contact  = lireCol(row, cols.CONTACT, headersReels);
-        const photo    = lireCol(row, cols.PHOTO, headersReels);
+      lignes.forEach((l, idx) => {
+        if (!l.nomAgent) { ignores++; return; }
+        // Ignorer la ligne d'en-tête si elle remonte
+        if (l.nomAgent === "Nom_Prenoms" || l.svcRaw === "Services") {
+          console.log(`ℹ️ Ligne d'en-tête ignorée (ligne ${idx+2})`);
+          return;
+        }
 
-        if (!nomAgent) { ignores++; return; }
-        if (nomAgent === "Nom_Prenoms" || svcRaw === "Services") return;
+        // Normaliser le service saisi
+        const svcNorm = norm(l.svcRaw);
+        console.log(`🔎 Ligne ${idx+2} : Service saisi = "${l.svcRaw}" (normalisé = "${svcNorm}")`);
 
-        const svcNorm = norm(svcRaw);
         let svcId = null;
+        // Recherche : correspondance exacte ou partielle
         if (svcNorm) {
           for (const [key, id] of Object.entries(serviceMap)) {
             if (svcNorm.includes(key) || key.includes(svcNorm)) {
               svcId = id;
+              console.log(`✅ Correspondance trouvée : "${svcNorm}" → service "${key}" (id ${id})`);
               break;
             }
           }
         }
-        if (!svcId) svcId = 'autre';
+        // Fallback : si non trouvé, on met dans 'autre'
+        if (!svcId) {
+          console.warn(`⚠️ Aucune correspondance pour "${l.svcRaw}" → affecté à Courriers & Archives`);
+          svcId = 'autre';
+        }
 
         const svc = services.find(s => s.id === svcId) || services.find(s => s.id === 'autre');
         if (svc) {
-          const photoUrl = photo ? driveToDirectImg(photo) : '';
-          console.log(`📷 Photo pour ${nomAgent} : ${photoUrl}`);
+          const photoUrl = l.photo ? driveToDirectImg(l.photo) : '';
           svc.agents.push({
-            nom: nomAgent,
-            poste: poste,
-            matricule: matricule,
-            contact: contact,
+            nom: l.nomAgent,
+            poste: l.poste,
+            matricule: l.matricule,
+            contact: l.contact,
             photo: photoUrl,
             statut: 'present',
-            service: svcRaw
+            service: l.svcRaw
           });
           distribues++;
-        } else ignores++;
+        } else {
+          ignores++;
+        }
       });
 
       console.log(`✅ ${distribues} agent(s) distribué(s), ${ignores} ignoré(s)`);
