@@ -2608,50 +2608,44 @@ function loadAdminFromSheet() {
       const json = JSON.parse(text.replace(/^.*?({.*})\s*\).*$/s, '$1'));
       const table = json.table;
 
-      // Lecture par positions (0=A, 1=B, 2=C, 3=D, 4=E, 5=F)
+      // Lecture avec les bons indices (1 = Services, 2 = Nom, 3 = Poste, 4 = Matricule, 5 = Contact, 6 = Photo)
       const lignes = (table.rows || []).map(row => ({
-        svcRaw:    valCell(row, 1),  // Services
-        nomAgent:  valCell(row, 2),  // Nom_Prenoms
-        poste:     valCell(row, 3),  // Poste
-        matricule: valCell(row, 4),  // Matricule
-        contact:   valCell(row, 5),  // Contact
-        photo:     valCell(row, 6)   // Photo (colonne F)
+        svcRaw:    valCell(row, 1),  // Colonne B
+        nomAgent:  valCell(row, 2),  // Colonne C
+        poste:     valCell(row, 3),  // Colonne D
+        matricule: valCell(row, 4),  // Colonne E
+        contact:   valCell(row, 5),  // Colonne F
+        photo:     valCell(row, 6)   // Colonne G
       }));
 
-      // Nettoyer les services
+      // ... suite (distribution dans les services) identique à avant ...
       const services = DATA.personnel_admin?.services || [];
       services.forEach(s => s.agents = []);
 
-      // Table de correspondance service
       const TABLE = {
-        'secretariat':         'secretariat',
+        'secretariat': 'secretariat',
         'secretariat general': 'secretariat',
         'examens et concours': 'examens',
-        'examens':             'examens',
-        'examen et concours':  'examens',
+        'examens': 'examens',
+        'examen et concours': 'examens',
         'ressources humaines': 'rh',
-        'ressources':          'rh',
-        'rh':                  'rh',
-        'informatique':        'informatique',
-        'communication':        'communication',
-        'economat':            'economat',
-        'autre':               'autre',
-        'courriers':           'autre',
-        'archives':            'autre',
-        'courriers et archives': 'autre',
+        'ressources': 'rh',
+        'rh': 'rh',
+        'informatique': 'informatique',
+        'communication': 'communication',
+        'economat': 'economat',
+        'autre': 'autre',
+        'courriers': 'autre',
+        'archives': 'autre',
+        'courriers et archives': 'autre'
       };
 
       let distribues = 0, ignores = 0;
 
-      lignes.forEach((l, idx) => {
+      lignes.forEach((l) => {
         if (!l.nomAgent) { ignores++; return; }
-        // Ignorer l’en-tête (si elle apparaît)
-        if (l.nomAgent === "Nom_Prenoms" || l.svcRaw === "Services") {
-          console.log("ℹ️ Ligne d'en-tête détectée et ignorée.");
-          return;
-        }
+        if (l.nomAgent === "Nom_Prenoms" || l.svcRaw === "Services") return;
 
-        // Normaliser le service
         const svcN = norm(l.svcRaw);
         let svcId  = TABLE[svcN];
         if (!svcId) {
@@ -2659,28 +2653,22 @@ function loadAdminFromSheet() {
             if (svcN.includes(key) || key.includes(svcN)) { svcId = val; break; }
           }
         }
-        if (!svcId) {
-          console.warn(`⚠️ "${l.svcRaw}" → Courriers & Archives`);
-          svcId = 'autre';
-        }
+        if (!svcId) svcId = 'autre';
 
         const svc = services.find(s => s.id === svcId) || services.find(s => s.id === 'autre');
         if (svc) {
-          // Conversion de la photo si présente
           const photoUrl = l.photo ? driveToDirectImg(l.photo) : '';
           svc.agents.push({
             nom: l.nomAgent,
             poste: l.poste,
             matricule: l.matricule,
             contact: l.contact,
-            photo: photoUrl,   // ← URL directe ou vide
+            photo: photoUrl,
             statut: 'present',
             service: l.svcRaw
           });
           distribues++;
-        } else {
-          ignores++;
-        }
+        } else ignores++;
       });
 
       console.log(`✅ ${distribues} agent(s) distribué(s)`);
@@ -2694,7 +2682,7 @@ function loadAdminFromSheet() {
       console.error('Erreur personnel:', err);
       if (btn) { btn.textContent = '❌ Erreur — voir console'; btn.disabled = false; }
     });
-  }
+          }
              
 // Lit la valeur d'une cellule par index de colonne (0 = A, 1 = B, ...)
 function valCell(row, colIndex) {
