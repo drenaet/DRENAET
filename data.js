@@ -65,7 +65,7 @@ const DATA = {
     form_admin: "https://forms.gle/vYNDCjxfFy8bKvwf6",  // ← Collez ici le lien de votre Google Form
 
     // Lien Google Form pour enregistrer un courrier
-    form_courriers:  "https://forms.gle/6sLYJ4pdATRBKG8u8",  
+    form_courriers:  "https://forms.gle/gasnUSTa93C4w9po8",  
 
     //sheet bandeau  
     bandeau:  "1M4Qx7NjKnnmStW36-gnxbCiIF77YDomU4sx5BCzjBtY",
