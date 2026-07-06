@@ -2597,7 +2597,7 @@ function loadAdminFromSheet() {
   }
 
   const onglet = encodeURIComponent(DATA.sheets?.admin_onglet || 'Réponses au formulaire 1');
-  const url    = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?sheet=${onglet}&tqx=out:json`;
+  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?sheet=${onglet}&tqx=out:json`;
 
   const btn = document.querySelector('[onclick="loadAdminFromSheet()"]');
   if (btn) { btn.textContent = '⏳ Chargement…'; btn.disabled = true; }
@@ -2608,52 +2608,79 @@ function loadAdminFromSheet() {
       const json = JSON.parse(text.replace(/^.*?({.*})\s*\).*$/s, '$1'));
       const table = json.table;
 
-      // Lecture avec les bons indices (1 = Services, 2 = Nom, 3 = Poste, 4 = Matricule, 5 = Contact, 6 = Photo)
-      const lignes = (table.rows || []).map(row => ({
-        svcRaw:    valCell(row, 1),  // Colonne B
-        nomAgent:  valCell(row, 2),  // Colonne C
-        poste:     valCell(row, 3),  // Colonne D
-        matricule: valCell(row, 4),  // Colonne E
-        contact:   valCell(row, 5),  // Colonne F
-        photo:     valCell(row, 6)   // Colonne G
-      }));
+      // 🔍 Lire les en-têtes réels pour déboguer
+      const headers = (table.cols || []).map(c => c.label || '');
+      console.log('📋 En-têtes du Sheet Admin :', headers);
 
-      // ... suite (distribution dans les services) identique à avant ...
+      // Lecture par positions : 0=Horodateur, 1=Services, 2=Nom, 3=Poste, 4=Matricule, 5=Contact, 6=Photo
+      const lignes = (table.rows || []).map(row => {
+        const get = (idx) => valCell(row, idx);
+        return {
+          horodateur: get(0),
+          svcRaw:     get(1),
+          nomAgent:   get(2),
+          poste:      get(3),
+          matricule:  get(4),
+          contact:    get(5),
+          photo:      get(6)
+        };
+      });
+
+      // Nettoyer les services
       const services = DATA.personnel_admin?.services || [];
       services.forEach(s => s.agents = []);
 
-      const TABLE = {
-        'secretariat': 'secretariat',
-        'secretariat general': 'secretariat',
-        'examens et concours': 'examens',
-        'examens': 'examens',
-        'examen et concours': 'examens',
-        'ressources humaines': 'rh',
-        'ressources': 'rh',
-        'rh': 'rh',
-        'informatique': 'informatique',
-        'communication': 'communication',
-        'economat': 'economat',
-        'autre': 'autre',
-        'courriers': 'autre',
-        'archives': 'autre',
-        'courriers et archives': 'autre'
-      };
+      // Construire une table de correspondance à partir des noms de services définis
+      const serviceMap = {};
+      services.forEach(s => {
+        const key = norm(s.nom);
+        serviceMap[key] = s.id;
+        // Alias pour "Courriers & Archives"
+        if (s.id === 'autre') {
+          serviceMap['courriers'] = s.id;
+          serviceMap['archives'] = s.id;
+          serviceMap['courriers et archives'] = s.id;
+        }
+      });
+      // Ajouter manuellement d'autres alias si besoin
+      serviceMap['secretariat general'] = 'secretariat';
+      serviceMap['examens'] = 'examens';
+      serviceMap['examen et concours'] = 'examens';
+      serviceMap['ressources'] = 'rh';
+      serviceMap['informatique'] = 'informatique';
+      serviceMap['communication'] = 'communication';
+      serviceMap['economat'] = 'economat';
 
       let distribues = 0, ignores = 0;
 
-      lignes.forEach((l) => {
+      lignes.forEach((l, idx) => {
         if (!l.nomAgent) { ignores++; return; }
-        if (l.nomAgent === "Nom_Prenoms" || l.svcRaw === "Services") return;
+        // Ignorer la ligne d'en-tête si elle remonte
+        if (l.nomAgent === "Nom_Prenoms" || l.svcRaw === "Services") {
+          console.log(`ℹ️ Ligne d'en-tête ignorée (ligne ${idx+2})`);
+          return;
+        }
 
-        const svcN = norm(l.svcRaw);
-        let svcId  = TABLE[svcN];
-        if (!svcId) {
-          for (const [key, val] of Object.entries(TABLE)) {
-            if (svcN.includes(key) || key.includes(svcN)) { svcId = val; break; }
+        // Normaliser le service saisi
+        const svcNorm = norm(l.svcRaw);
+        console.log(`🔎 Ligne ${idx+2} : Service saisi = "${l.svcRaw}" (normalisé = "${svcNorm}")`);
+
+        let svcId = null;
+        // Recherche : correspondance exacte ou partielle
+        if (svcNorm) {
+          for (const [key, id] of Object.entries(serviceMap)) {
+            if (svcNorm.includes(key) || key.includes(svcNorm)) {
+              svcId = id;
+              console.log(`✅ Correspondance trouvée : "${svcNorm}" → service "${key}" (id ${id})`);
+              break;
+            }
           }
         }
-        if (!svcId) svcId = 'autre';
+        // Fallback : si non trouvé, on met dans 'autre'
+        if (!svcId) {
+          console.warn(`⚠️ Aucune correspondance pour "${l.svcRaw}" → affecté à Courriers & Archives`);
+          svcId = 'autre';
+        }
 
         const svc = services.find(s => s.id === svcId) || services.find(s => s.id === 'autre');
         if (svc) {
@@ -2668,10 +2695,12 @@ function loadAdminFromSheet() {
             service: l.svcRaw
           });
           distribues++;
-        } else ignores++;
+        } else {
+          ignores++;
+        }
       });
 
-      console.log(`✅ ${distribues} agent(s) distribué(s)`);
+      console.log(`✅ ${distribues} agent(s) distribué(s), ${ignores} ignoré(s)`);
       renderAdmin();
       const nbTotal = services.reduce((s, sv) => s + sv.agents.length, 0);
       const el = document.getElementById('cnt-admin');
@@ -2679,10 +2708,10 @@ function loadAdminFromSheet() {
       if (btn) { btn.textContent = `✅ ${distribues} agent(s)`; btn.disabled = false; }
     })
     .catch(err => {
-      console.error('Erreur personnel:', err);
+      console.error('Erreur chargement personnel:', err);
       if (btn) { btn.textContent = '❌ Erreur — voir console'; btn.disabled = false; }
     });
-          }
+  }    
              
 // Lit la valeur d'une cellule par index de colonne (0 = A, 1 = B, ...)
 function valCell(row, colIndex) {
@@ -2690,6 +2719,15 @@ function valCell(row, colIndex) {
   if (!cell || cell.v === null || cell.v === undefined) return '';
   return String(cell.v).trim();
 }
+
+// Normalise une chaîne : minuscules, sans accents, sans espaces superflus
+function norm(s) {
+  if (!s) return '';
+  return s.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // retire accents
+    .trim();
+}
+  
 // ══ CHARGEMENT ÉCOLES IEPP — SHEET UNIQUE ════════════════════════
 // Fonction utilitaire : normalise une chaîne (minuscules, sans accents, sans espaces superflus)
 function norm(s) {
