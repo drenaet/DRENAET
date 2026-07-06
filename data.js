@@ -46,7 +46,7 @@ const DATA = {
     
    // Sheet du Courrier 
     courriers:        "1r7ysIaUXu5izYErbzRffBRt7_rkQ8z-ePa1CTyvNHMw",  // ← ID Google Sheet Courriers
-    courriers_onglet: "Courriers",  // ← Nom exact de l'onglet (A=Type B=Mois C=Num D=Date E=Objet F=Obs)    
+    courriers_onglet: "Réponses au formulaire 1",  // ← Nom exact de l'onglet (A=Type B=Mois C=Num D=Date E=Objet F=Obs)    
 
     // ── SHEET INFO / CAROUSEL ────────────────────────────────────
     // Format du Sheet (onglet "Info") :
