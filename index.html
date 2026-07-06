@@ -314,8 +314,8 @@ body {
 .p-matricule{font-size:10px;font-weight:700;color:#DC2626;margin-top:1px;letter-spacing:.3px;}
 
   .avatar {
-  width: 40px;
-  height: 40px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -2102,6 +2102,7 @@ function loadBandeauFromSheet() {
     })
     .catch(err => console.error('Erreur chargement bandeau:', err));
   }
+
   
 let carouselIdx=0, carouselTimer=null;
 function renderInfo() {
@@ -2499,8 +2500,9 @@ function switchIEPPTab(ieppId, tab) {
   });
 }
 
-// ══ ADMIN : accordéons par service ════════════════════════════════
-function renderAdmin() {
+// ══ ADMIN : accordéons par service ════════════════════════════════ //
+
+  function renderAdmin() {
   const el = document.getElementById('admin-services');
   if (!el) return;
   const services      = DATA.personnel_admin?.services || [];
@@ -2554,13 +2556,11 @@ function renderAdmin() {
 }
 
 function renderAgentRow(a) {
-  const ini = (a.nom||'A').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  const ini = (a.nom || 'A').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 
-  // Gestion de la photo : si elle existe, on affiche l’image, sinon les initiales
   let avatarHtml = '';
   if (a.photo && a.photo.trim() !== '') {
     avatarHtml = `<img src="${a.photo}" alt="${a.nom}" class="agent-photo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">`;
-    // On ajoute un fallback (les initiales) en cas d’erreur de chargement
     avatarHtml += `<div class="avatar-fallback">${ini}</div>`;
   } else {
     avatarHtml = `<div class="avatar-fallback" style="display:flex;">${ini}</div>`;
@@ -2571,14 +2571,14 @@ function renderAgentRow(a) {
       ${avatarHtml}
     </div>
     <div class="p-info">
-      <div class="pname" style="white-space:normal;">${a.nom||'—'}</div>
-      ${a.poste     ? `<div class="prole" style="color:var(--sky);font-weight:600;">${a.poste}</div>` : ''}
+      <div class="pname" style="white-space:normal;">${a.nom || '—'}</div>
+      ${a.poste ? `<div class="prole" style="color:var(--sky);font-weight:600;">${a.poste}</div>` : ''}
       ${a.matricule ? `<div class="p-matricule">Mat. ${a.matricule}</div>` : ''}
-      ${a.contact   ? `<div class="prole">📞 ${a.contact}</div>` : ''}
+      ${a.contact ? `<div class="prole">📞 ${a.contact}</div>` : ''}
     </div>
-    ${statusBadge(a.statut||'present')}
+    ${statusBadge(a.statut || 'present')}
   </div>`;
-}
+  }
 
 function toggleSvc(id) {
   document.getElementById('svc-card-' + id)?.classList.toggle('open');
