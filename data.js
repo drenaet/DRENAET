@@ -13,9 +13,8 @@ const DATA = {
   // ── GOOGLE SHEETS — IDs des formulaires ────────────────────────
   // L'ID se trouve dans l'URL : docs.google.com/spreadsheets/d/ ICI /edit
   sheets: {
-    secondaires_prives:  "1zPe70IuACqRoDRwFWl570eP7jMHRABEd_KMKT_jwvh4",
-    secondaires_publics: "1h8m4MBr0ONq3q1bRqLqWZA1GlvsMP6ATfHJXnJ7mhv0",
-
+    secondaires:  "1hSzV2p7A1vtI-WPnU4qIP-CHSbh0FXlYLY14gKsu0x8",
+    
     // ── SHEET UNIQUE ÉCOLES IEPP ─────────────────────────────────
     // Un seul Google Form collecte toutes les écoles (IEPP 1/2/3,
     // Primaire/Maternelle, Public/Privé).
